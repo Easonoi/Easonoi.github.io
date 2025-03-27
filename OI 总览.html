@@ -1,0 +1,546 @@
+<!DOCTYPE html><html><head>
+      <title>a</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <!-- The content below will be included at the end of the <head> element. --><script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script></head><body for="html-export">
+    
+    
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="noi系列活动知识整理">NOI系列活动知识整理 </h1>
+<h2 id="零-前言">零、前言 </h2>
+<ul>
+<li>如果你想拿省一：熟练掌握6级及以下内容，7-8级学会</li>
+<li>如果你想高分省一：8级以下熟练掌握</li>
+<li>如果你想进省队：9级掌握, 10级了解，并推荐观看：</li>
+</ul>
+<iframe src="https://player.bilibili.com/player.html?bvid=BV1di421f7L5" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="640" height="480">
+</iframe>
+<h2 id="一-入门级">一、入门级 </h2>
+<h3 id="11-计算机基础与编程环境">1.1 计算机基础与编程环境 </h3>
+<ul>
+<li>〖1级〗计算机的基本构成（CPU、内存、I/O 设备等）。</li>
+<li>〖1级〗Windows、Linux 等操作系统的基本概念及常见操作。</li>
+<li>〖1级〗计算机网络和 Internet 的基本概念。</li>
+<li>〖1级〗计算机的历史及其在现代社会中的应用。</li>
+<li>〖1级〗NOI 以及相关活动的历史。</li>
+<li>〖1级〗进制的基本概念与进制转换、字节与字；例题: <a href="https://www.luogu.com.cn/problem/P1143">Luogu P1143 进制转换</a>（练习进制之间的转换）。</li>
+<li>〖1级〗程序设计语言以及程序编译和运行的基本概念。</li>
+<li>〖1级〗使用图形界面新建、复制、删除、移动文件或目录。</li>
+<li>〖1级〗使用 Windows 系统下的集成开发环境（例如 Dev-C++ 等）。</li>
+<li>〖1级〗使用 Linux 系统下的集成开发环境（例如 Code::Blocks 等）。</li>
+<li>〖1级〗gcc、g++ 等常见编译器的基本使用。</li>
+</ul>
+<h3 id="12-c-程序设计">1.2 C++ 程序设计 </h3>
+<h4 id="121-程序基本概念">1.2.1 程序基本概念 </h4>
+<ul>
+<li>〖1级〗标识符、关键字、常量、变量、字符串、表达式的概念。</li>
+<li>〖1级〗常量与变量的命名、定义及作用域。</li>
+<li>〖2级〗头文件与命名空间的定义与作用。</li>
+<li>〖2级〗编辑、编译、解释、调试等概念的理解。</li>
+</ul>
+<h4 id="122-基本数据类型">1.2.2 基本数据类型 </h4>
+<ul>
+<li>〖1级〗整数型：<code>int</code>、<code>long long</code>。</li>
+<li>〖1级〗实数型：<code>float</code>、<code>double</code>。</li>
+<li>〖1级〗字符型：<code>char</code>。</li>
+<li>〖1级〗布尔型：<code>bool</code>。</li>
+</ul>
+<h4 id="123-程序基本语句">1.2.3 程序基本语句 </h4>
+<ul>
+<li>〖2级〗输入输出语句：<code>cin</code>、<code>scanf</code>、<code>cout</code>、<code>printf</code>，赋值语句，复合语句等。</li>
+<li>〖2级〗条件语句：<code>if</code> 语句、<code>switch</code> 语句，嵌套条件语句。</li>
+<li>〖2级〗循环语句：<code>for</code> 语句、<code>while</code> 语句、<code>do...while</code> 语句。</li>
+<li>〖3级〗多层循环语句（嵌套循环，用于枚举多重嵌套情况）。</li>
+</ul>
+<h4 id="124-基本运算">1.2.4 基本运算 </h4>
+<ul>
+<li>〖1级〗算术运算：加、减、乘、除、整除、求余。</li>
+<li>〖1级〗关系运算：大于、大于等于、小于、小于等于、等于、不等于。</li>
+<li>〖1级〗逻辑运算：与（<code>&amp;&amp;</code>）、或（<code>||</code>）、非（<code>!</code>）。</li>
+<li>〖1级〗变量自增与自减运算。</li>
+<li>〖1级〗三目运算（条件运算符）。</li>
+<li>〖3级〗位运算：与（<code>&amp;</code>）、或（<code>|</code>）、非（<code>~</code>）、异或（<code>^</code>）、左移（<code>&lt;&lt;</code>）、右移（<code>&gt;&gt;</code>）。</li>
+</ul>
+<h4 id="125-数学库常用函数">1.2.5 数学库常用函数 </h4>
+<ul>
+<li>〖3级〗常用数学函数：绝对值、四舍五入、取上整（天花板）、取下整（地板）、常用三角函数、对数、指数、平方根等。</li>
+</ul>
+<h4 id="126-结构化程序设计">1.2.6 结构化程序设计 </h4>
+<ul>
+<li>〖1级〗顺序结构、分支结构和循环结构（程序的三种基本结构）。</li>
+<li>〖2级〗自顶向下、逐步求精的模块化程序设计思想。</li>
+<li>〖2级〗流程图的概念及使用流程图描述算法流程。</li>
+</ul>
+<h4 id="127-数组">1.2.7 数组 </h4>
+<ul>
+<li>〖1级〗数组的定义，数组下标的含义。</li>
+<li>〖1级〗数组的输入与输出。</li>
+<li>〖2级〗一维数组的综合运用。</li>
+<li>〖3级〗二维数组及多维数组的综合运用（如矩阵运算）。</li>
+</ul>
+<h4 id="128-字符串的处理">1.2.8 字符串的处理 </h4>
+<ul>
+<li>〖2级〗字符数组与字符串类型的关系。</li>
+<li>〖2级〗字符数组的综合应用。</li>
+<li>〖2级〗<code>std::string</code> 类的定义与常用函数使用。</li>
+<li>〖3级〗<code>std::string</code> 类的综合应用（如字符串拼接、查找、比较等）。</li>
+</ul>
+<h4 id="129-函数与递归">1.2.9 函数与递归 </h4>
+<ul>
+<li>〖2级〗函数的定义与调用，形参与实参。</li>
+<li>〖3级〗值传递参数与引用传递参数。</li>
+<li>〖2级〗常量与变量的作用范围（局部变量与全局变量）。</li>
+<li>〖2级〗递归函数的概念、定义与调用（递归用于将大问题拆解为相似的小问题，例如汉诺塔问题的求解）。</li>
+</ul>
+<h4 id="1210-结构体类型">1.2.10 结构体类型 </h4>
+<ul>
+<li>〖3级〗结构体的定义及应用（将多个不同类型的数据组合成单一类型，用于描述复杂数据，如学生信息记录）。</li>
+</ul>
+<h4 id="1211-指针类型">1.2.11 指针类型 </h4>
+<ul>
+<li>〖4级〗指针的概念及使用（存储变量地址，通过指针可以直接访问和操作内存，常用于动态内存管理和实现复杂数据结构）。</li>
+<li>〖4级〗指针与数组的关系（数组名作为指针，指针运算遍历数组等）。</li>
+<li>〖4级〗字符指针与 <code>std::string</code> 类的关系。</li>
+<li>〖4级〗指向结构体的指针及其使用。</li>
+</ul>
+<h4 id="1212-文件及基本读写">1.2.12 文件及基本读写 </h4>
+<ul>
+<li>〖2级〗文件的基本概念，文本文件的基本操作。</li>
+<li>〖2级〗文本文件与二进制文件的区别。</li>
+<li>〖2级〗文件重定向、文件读写操作（如使用文件流读写数据）。</li>
+</ul>
+<h4 id="1213-stl-模板应用">1.2.13 STL 模板应用 </h4>
+<ul>
+<li>〖3级〗<code>&lt;algorithm&gt;</code> 库中常用函数：如 <code>std::sort</code> 排序；例题: <a href="https://www.luogu.com.cn/problem/P1177">Luogu P1177 排序</a>（使用快速排序算法对一系列数字排序）。</li>
+<li>〖4级〗STL 常用容器：栈（<code>std::stack</code>）、队列（<code>std::queue</code>）、链表（<code>std::list</code>）、向量（<code>std::vector</code>）等的基本使用（提供现成的数据结构，方便实现复杂操作）。</li>
+</ul>
+<h3 id="13-数据结构">1.3 数据结构 </h3>
+<h4 id="131-线性表">1.3.1 线性表 </h4>
+<ul>
+<li>〖3级〗链表：单链表、双向链表、循环链表的概念与实现。</li>
+<li>〖3级〗栈：后进先出（LIFO）的线性结构及其基本操作（push/pop）。</li>
+<li>〖3级〗队列：先进先出（FIFO）的线性结构及其基本操作（enqueue/dequeue）。</li>
+</ul>
+<h4 id="132-简单树">1.3.2 简单树 </h4>
+<ul>
+<li>〖3级〗树的定义及相关概念（根、节点、叶子、深度等）。</li>
+<li>〖4级〗树的双亲表示法（用数组表示每个节点的父节点）。</li>
+<li>〖3级〗二叉树的定义及基本性质。</li>
+<li>〖4级〗二叉树的孩子表示法（链表表示法，每个节点指向孩子）。</li>
+<li>〖4级〗二叉树的遍历：前序遍历、中序遍历、后序遍历。</li>
+</ul>
+<h4 id="133-特殊树">1.3.3 特殊树 </h4>
+<ul>
+<li>〖4级〗完全二叉树的定义与基本性质。</li>
+<li>〖4级〗完全二叉树的数组表示法（堆的存储基础）。</li>
+<li>〖4级〗哈夫曼树的定义、构造及遍历；例题: <a href="https://www.luogu.com.cn/problem/P2168">Luogu P2168 荷马史诗 (Huffman树)</a>（构造哈夫曼树进行最优编码，数据压缩应用）。</li>
+<li>〖4级〗二叉排序树（BST）的定义、构造及遍历。</li>
+</ul>
+<h4 id="134-简单图">1.3.4 简单图 </h4>
+<ul>
+<li>〖3级〗图的定义及相关概念（顶点、边、度等）。</li>
+<li>〖4级〗图的邻接矩阵存储方法。</li>
+<li>〖4级〗图的邻接表存储方法。</li>
+</ul>
+<h3 id="14-算法">1.4 算法 </h3>
+<h4 id="141-算法概念与描述">1.4.1 算法概念与描述 </h4>
+<ul>
+<li>〖1级〗算法的概念（解决问题的明确指令序列，有穷性、确定性等性质）。</li>
+<li>〖2级〗算法的描述方法：自然语言描述、流程图描述、伪代码描述。</li>
+</ul>
+<h4 id="142-入门算法">1.4.2 入门算法 </h4>
+<ul>
+<li>〖1级〗枚举法（穷举所有可能情况寻找答案）。</li>
+<li>〖1级〗模拟法（按照问题描述直接模拟过程）。</li>
+</ul>
+<h4 id="143-基础算法">1.4.3 基础算法 </h4>
+<ul>
+<li>〖3级〗贪心法（每步选择当前最优，求整体最优；适用于贪心选择性质的问题）。</li>
+<li>〖3级〗迭代法（递推法，通过已知结果推导下一个结果，如斐波那契数列的迭代计算）。</li>
+<li>〖4级〗递归法（函数自身调用，用于分治问题）。</li>
+<li>〖4级〗二分法（二分查找，在有序数组中快速查找元素）；例题: <a href="https://www.luogu.com.cn/problem/P1044">Luogu P1044 栈</a>（利用二分和动态规划求解出栈序列计数，结果为卡特兰数）。</li>
+<li>〖4级〗倍增法（例如快速幂，通过不断将指数减半来计算幂）；例题: <a href="https://www.luogu.com.cn/problem/P1226">Luogu P1226 快速幂</a>（计算 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>a</mi><mi>b</mi></msup><mspace></mspace><mspace width="0.6667em"></mspace><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow><mtext> </mtext><mtext> </mtext><mi>m</mi></mrow><annotation encoding="application/x-tex">a^b \mod m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8491em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8491em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">b</span></span></span></span></span></span></span></span><span class="mspace allowbreak"></span><span class="mspace" style="margin-right:0.6667em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord"><span class="mord"><span class="mord mathrm">mod</span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">m</span></span></span></span>，利用指数二分减少计算次数）。</li>
+</ul>
+<h4 id="144-数值处理算法">1.4.4 数值处理算法 </h4>
+<ul>
+<li>〖4级〗高精度加法（处理超出语言内置范围的大整数加法）。</li>
+<li>〖4级〗高精度减法。</li>
+<li>〖4级〗高精度乘法。</li>
+<li>〖4级〗高精度除法求商和余数。<br>
+<em>(以上高精度算法用于大数计算，例如实现任意长度的大整数运算。)</em></li>
+</ul>
+<h4 id="145-排序算法">1.4.5 排序算法 </h4>
+<ul>
+<li>〖3级〗排序的基本概念（稳定性、时间复杂度等）。</li>
+<li>〖3级〗冒泡排序。</li>
+<li>〖3级〗简单选择排序。</li>
+<li>〖3级〗简单插入排序。<br>
+<em>(以上为初级排序算法，适合小规模数据；了解其原理和实现。)</em></li>
+</ul>
+<h4 id="146-图论算法">1.4.6 图论算法 </h4>
+<ul>
+<li>〖4级〗图的深度优先搜索（DFS）算法。</li>
+<li>〖4级〗图的广度优先搜索（BFS）算法。</li>
+<li>〖5级〗洪水填充算法（Flood Fill，用DFS/BFS填充区域）；例题: <a href="https://www.luogu.com.cn/problem/P1162">Luogu P1162 填涂颜色</a>（经典洪水填充问题，使用 DFS/BFS 找出封闭区域）。</li>
+</ul>
+<h4 id="147-动态规划">1.4.7 动态规划 </h4>
+<ul>
+<li>〖4级〗动态规划的基本思路（将问题拆解成子问题，保存子问题结果以避免重复计算）。</li>
+<li>〖4级〗简单一维动态规划（如背包问题的一维DP解法）。</li>
+<li>〖5级〗简单背包类型动态规划（典型 0-1 背包问题）；例题: <a href="https://www.luogu.com.cn/problem/P1060">Luogu P1060 开心的金明</a>（0-1背包，选择物品使总价值最大）。</li>
+<li>〖5级〗简单区间类型动态规划（如区间合并石子问题）；例题: <a href="https://www.luogu.com.cn/problem/P1880">Luogu P1880 石子合并</a>（经典区间DP，计算合并石子的最小代价）。</li>
+</ul>
+<h3 id="15-数学">1.5 数学 </h3>
+<h4 id="151-数及其运算">1.5.1 数及其运算 </h4>
+<ul>
+<li>〖1级〗数的概念，算术运算（加、减、乘、除、求余）。</li>
+<li>〖1级〗数的进制：二进制、八进制、十六进制和十进制及相互转换（理解不同基数下数字的表示）。</li>
+</ul>
+<h4 id="152-初中数学">1.5.2 初中数学 </h4>
+<ul>
+<li>〖1级〗初中代数知识（一次方程组、简单函数等）。</li>
+<li>〖1级〗初中平面几何知识（勾股定理、圆周角等基础几何）。</li>
+</ul>
+<h4 id="153-初等数论">1.5.3 初等数论 </h4>
+<ul>
+<li>〖3级〗整除、因数、倍数、指数、质数、合数、同余等概念。</li>
+<li>〖3级〗唯一分解定理（每个正整数可唯一分解为质数相乘）。</li>
+<li>〖3级〗欧几里得算法（辗转相除法，用于求最大公约数，GCD）。</li>
+<li>〖4级〗埃氏筛法和线性筛法求素数（高效筛选出一定范围内的所有质数）。</li>
+</ul>
+<h4 id="154-组合数学">1.5.4 组合数学 </h4>
+<ul>
+<li>〖2级〗加法原理（分类计数原理）。</li>
+<li>〖2级〗乘法原理（分步计数原理）。</li>
+<li>〖4级〗排列及其计数公式。</li>
+<li>〖4级〗组合及其计数公式。</li>
+<li>〖4级〗杨辉三角（Pascal 三角形）及组合数性质。</li>
+</ul>
+<h2 id="二-提高级">二、提高级 </h2>
+<h3 id="21-计算机基础与编程环境">2.1 计算机基础与编程环境 </h3>
+<ul>
+<li>〖5级〗在 Linux 系统终端使用 <code>mkdir</code>、<code>cp</code>、<code>rm</code>、<code>mv</code> 等命令新建、复制、删除、移动文件或目录。</li>
+<li>〖5级〗在 Linux 系统终端使用 <code>cd</code>、<code>pwd</code>、<code>ls</code> 等命令更改目录、显示当前路径和查看目录内容。</li>
+<li>〖5级〗在 Linux 系统下使用 Gedit、Vim 或 Emacs 等文本编辑工具编写代码。</li>
+<li>〖5级〗熟悉 gcc、g++ 等编译器，以及常用的优化选项、数学库选项等编译选项。</li>
+<li>〖5级〗在 Linux 系统终端中运行程序，并使用 <code>time</code> 命令查看程序运行时间（理解 <code>real time</code>、<code>sys time</code>、<code>user time</code> 的区别）。</li>
+<li>〖5级〗了解调试工具 gdb 及其常用命令（如 <code>break</code>、<code>display</code>、<code>continue</code>、<code>step</code> 等）进行断点调试。</li>
+</ul>
+<h3 id="22-c-程序设计">2.2 C++ 程序设计 </h3>
+<h4 id="221-类class">2.2.1 类（class） </h4>
+<ul>
+<li>〖6级〗类的概念及简单应用（封装属性和方法，自定义数据类型）。</li>
+<li>〖6级〗成员函数和运算符重载（定义类的方法以及重载运算符实现自定义操作）。</li>
+</ul>
+<h4 id="222-stl-模板">2.2.2 STL 模板 </h4>
+<ul>
+<li>〖5级〗集合（<code>std::set</code>）的使用（自动有序、不重复）。</li>
+<li>〖5级〗列表（<code>std::list</code>）、双端队列（<code>std::deque</code>）、优先队列（<code>std::priority_queue</code>）的使用。</li>
+<li>〖5级〗多重集合（<code>std::multiset</code>）的使用。</li>
+<li>〖5级〗映射（<code>std::map</code>）和多重映射（<code>std::multimap</code>）的使用。</li>
+<li>〖5级〗对组（<code>std::pair</code>）和元组（<code>std::tuple</code>）的使用。</li>
+</ul>
+<h3 id="23-数据结构">2.3 数据结构 </h3>
+<h4 id="231-线性结构">2.3.1 线性结构 </h4>
+<ul>
+<li>〖5级〗双端栈（两端都可进出的栈，亦称 Deque 的一种特殊情况）。</li>
+<li>〖5级〗双端队列（两端都可进出的队列）。</li>
+<li>〖5级〗有序队列（按优先级出队的队列）。</li>
+<li>〖6级〗优先队列（通常用堆实现，实现大顶堆或小顶堆）。</li>
+<li>〖6级〗倍增表（ST 表，用于快速 RMQ 查询）。</li>
+</ul>
+<h4 id="232-集合与森林">2.3.2 集合与森林 </h4>
+<ul>
+<li>〖6级〗等价类概念（划分集合为若干等价类）。</li>
+<li>〖6级〗并查集（不相交集合并合查找数据结构，用于处理动态连通性）；例题: <a href="https://www.luogu.com.cn/problem/P2024">Luogu P2024 食物链</a>（扩展并查集，解决带关系的动态连通问题）。</li>
+<li>〖6级〗树与二叉树的转化 —— 孩子兄弟表示法（将任意树转换为二叉树表示的方法）。</li>
+</ul>
+<h4 id="233-特殊树">2.3.3 特殊树 </h4>
+<ul>
+<li>〖6级〗线段树与树状数组（Fenwick 树）的原理和应用（用于区间查询与单点更新等）。</li>
+<li>〖6级〗字典树（Trie 树）的原理和应用（用于快速检索前缀匹配，如单词查询）。</li>
+<li>〖7级〗笛卡尔树（Cartesian Tree，用于序列表示与栈优化等特殊用途）。</li>
+<li>〖8级〗平衡二叉树：AVL 树、Treap、Splay 等（能自平衡保持较优的操作性能）。</li>
+<li>〖8级〗基环树（含有恰好一个环的无向图，也称伪树结构）。</li>
+</ul>
+<h4 id="234-常见图">2.3.4 常见图 </h4>
+<ul>
+<li>〖5级〗稀疏图（边很少，相对于节点数来说）。</li>
+<li>〖6级〗偶图（二分图，顶点可分为两个独立集，任意边的两个端点不在同一集中）。</li>
+<li>〖6级〗欧拉图（存在欧拉回路或路径的图，满足度数条件）。</li>
+<li>〖6级〗有向无环图（DAG）。</li>
+<li>〖7级〗连通图与强连通图（无向图连通；有向图中每对顶点互相可达）。</li>
+<li>〖7级〗重连通图（每条边的移除都仍连通的无向图）。</li>
+</ul>
+<h4 id="235-哈希表">2.3.5 哈希表 </h4>
+<ul>
+<li>〖5级〗数值哈希函数的构造（将数映射为哈希表索引的方法）。</li>
+<li>〖6级〗排列哈希函数的构造（针对排列的哈希，例如康托展开）。</li>
+<li>〖6级〗字符串哈希函数的构造（如多项式哈希，用于字符串快速比较）。</li>
+<li>〖6级〗哈希冲突的常见解决方法（开放地址法、链地址法等）。</li>
+</ul>
+<h3 id="24-算法">2.4 算法 </h3>
+<h4 id="241-复杂度分析">2.4.1 复杂度分析 </h4>
+<ul>
+<li>〖6级〗空间复杂度分析（算法对内存的消耗估计）。</li>
+<li>〖6级〗时间复杂度分析（算法随输入规模增长的时间消耗，O符号表示）。</li>
+</ul>
+<h4 id="242-基础算法">2.4.2 基础算法 </h4>
+<ul>
+<li>〖6级〗分治算法（Divide and Conquer，将问题分成更小的子问题解决，再合并结果，例如归并排序的思想）。</li>
+</ul>
+<h4 id="243-排序算法">2.4.3 排序算法 </h4>
+<ul>
+<li>〖5级〗归并排序（分治法的典型应用，稳定排序，时间复杂度 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>）。</li>
+<li>〖5级〗快速排序（不稳定排序，平均时间复杂度 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>，最坏 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0641em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>，但实际表现优秀）。</li>
+<li>〖6级〗堆排序（利用二叉堆实现的排序，时间复杂度 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>）。</li>
+<li>〖6级〗树形选择排序（锦标赛排序，用树结构选出最小值的排序）。</li>
+<li>〖5级〗桶排序（适用于数据范围有限且均匀分布，线性时间排序）。</li>
+<li>〖6级〗基数排序（按位或数位分组的非比较排序，线性时间，要求数据可分解为“位”）。</li>
+</ul>
+<h4 id="244-字符串相关算法">2.4.4 字符串相关算法 </h4>
+<ul>
+<li>〖5级〗字符串匹配算法 —— KMP（Knuth-Morris-Pratt 算法，在线性时间在文本中找到模式串）；例题: <a href="https://www.luogu.com.cn/problem/P3375">Luogu P3375 KMP 字符串匹配</a>（实现 KMP 算法，找到模式串在文本串中的所有出现位置）。</li>
+</ul>
+<h4 id="245-搜索算法">2.4.5 搜索算法 </h4>
+<ul>
+<li>〖6级〗搜索的剪枝优化（在DFS/BFS中提前排除不必要的分支，提高效率）。</li>
+<li>〖6级〗记忆化搜索（将搜索中遇到的状态结果缓存，避免重复运算，相当于带缓存的 DFS）。</li>
+<li>〖7级〗启发式搜索（如 A* 算法，利用启发函数引导搜索，更快找到目标）；例题: <a href="https://www.luogu.com.cn/problem/P1379">Luogu P1379 八数码难题</a>（经典八数码问题，可用启发式搜索A*高效求解最少步数）。</li>
+<li>〖7级〗双向宽度优先搜索（双向 BFS，从起点和终点同时开始搜索，在中间会合，减少搜索空间）。</li>
+<li>〖7级〗迭代加深搜索（逐步加大深度界限的 DFS，兼具 DFS低空间占用和 BFS找最短路的优点）。</li>
+<li>〖8级〗搜索状态的压缩存储（用位压缩等方式表示状态，降低空间消耗，例如用一个整数的二进制表示棋盘状态以便于在搜索中存储和比较）。</li>
+</ul>
+<h4 id="246-图论算法">2.4.6 图论算法 </h4>
+<ul>
+<li>〖6级〗Prim 和 Kruskal 等最小生成树算法（求连通图的最小生成树，总权值最小）；例题: <a href="https://www.luogu.com.cn/problem/P3366">Luogu P3366 最小生成树</a>（使用 Kruskal 算法求加权无向图的最小生成树）。</li>
+<li>〖7级〗次小生成树算法（求权值仅次于最小生成树的生成树，用于备用线路设计等）。</li>
+<li>〖6级〗Dijkstra、Bellman-Ford、SPFA 等单源最短路算法（分别适用于无负权、有负权、优化有负权情况）。</li>
+<li>〖7级〗次短路径算法（求从源到目的地的次短距离）。</li>
+<li>〖6级〗Floyd-Warshall 算法（计算任意两点间最短路和传递闭包，多源最短路，时间复杂度 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><msup><mi>n</mi><mn>3</mn></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n^3)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0641em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>）。</li>
+<li>〖6级〗有向无环图的拓扑排序算法（线性排序顶点顺序，用于依赖关系的任务调度）。</li>
+<li>〖6级〗求欧拉道路和欧拉回路的算法（Hierholzer 算法，在图中找一笔画路径）。</li>
+<li>〖6级〗二分图的构造及判定算法（判断图是否二分，通常用染色法 BFS/DFS）。</li>
+<li>〖6级〗最近公共祖先（LCA）查询算法（倍增算法/RMQ算法，在树中快速找到两个节点的最近公共祖先）；例题: <a href="https://www.luogu.com.cn/problem/P3379">Luogu P3379 最近公共祖先</a>（预处理树节点祖先信息，实现多次 LCA 查询）。</li>
+<li>〖7级〗求强连通分量算法（Tarjan 或 Kosaraju 算法，分解有向图的强连通分量）。</li>
+<li>〖7级〗强连通分量的缩点算法（将每个强连通分量当作一个点，构建分量有向无环图）；例题: <a href="https://www.luogu.com.cn/problem/P3387">Luogu P3387 缩点</a>（使用 Tarjan 算法找强连通分量并缩点后，在新图上进行 DP 计算）。</li>
+<li>〖7级〗求割点、割边算法（Tarjan 算法求关节点和桥，用于网络连通性分析）。</li>
+</ul>
+<h4 id="247-动态规划">2.4.7 动态规划 </h4>
+<ul>
+<li>〖6级〗树形动态规划（在树上进行 DP，如树的选取节点问题）。</li>
+<li>〖7级〗状态压缩动态规划（用二进制位表示选取状态的 DP，如旅行商问题用位状态表示已访问城市集合）。</li>
+<li>〖8级〗动态规划的常用优化（如四边形不等式优化、单调队列优化、斜率优化等技巧，提高 DP 效率）。</li>
+</ul>
+<h3 id="25-数学">2.5 数学 </h3>
+<h4 id="251-高中数学">2.5.1 高中数学 </h4>
+<ul>
+<li>〖5级〗代数（高中代数知识，如二次函数、排列组合基础）。</li>
+<li>〖6级〗解析几何（直线方程、圆锥曲线等基础，坐标系解几何问题）。</li>
+<li>〖6级〗立体几何（简单空间几何知识）。</li>
+</ul>
+<h4 id="252-初等数论">2.5.2 初等数论 </h4>
+<ul>
+<li>〖5级〗同余式（模运算及性质，如 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>≡</mo><mi>b</mi><mspace></mspace><mspace width="0.4444em"></mspace><mo stretchy="false">(</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow><mspace width="0.3333em"></mspace><mi>m</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">a \equiv b \pmod m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4637em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≡</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace allowbreak"></span><span class="mspace" style="margin-right:0.4444em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathrm">mod</span></span></span><span class="mspace" style="margin-right:0.3333em;"></span><span class="mord mathnormal">m</span><span class="mclose">)</span></span></span></span>）。</li>
+<li>〖7级〗欧拉定理和欧拉函数 φ(n)（若 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>gcd</mi><mo>⁡</mo><mo stretchy="false">(</mo><mi>a</mi><mo separator="true">,</mo><mi>n</mi><mo stretchy="false">)</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\gcd(a,n)=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop"><span style="margin-right:0.01389em;">g</span>cd</span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span>，则 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>a</mi><mrow><mi>φ</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></mrow></msup><mo>≡</mo><mn>1</mn><mspace></mspace><mspace width="0.4444em"></mspace><mo stretchy="false">(</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow><mspace width="0.3333em"></mspace><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">a^{φ(n)}\equiv1\pmod n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.888em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.888em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">φ</span><span class="mopen mtight">(</span><span class="mord mathnormal mtight">n</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≡</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span><span class="mspace allowbreak"></span><span class="mspace" style="margin-right:0.4444em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathrm">mod</span></span></span><span class="mspace" style="margin-right:0.3333em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>）。</li>
+<li>〖7级〗费马小定理（质数模下的特殊情形）。</li>
+<li>〖7级〗威尔逊定理（<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>p</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mo stretchy="false">!</mo><mo>≡</mo><mo>−</mo><mn>1</mn><mspace></mspace><mspace width="0.4444em"></mspace><mo stretchy="false">(</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow><mspace width="0.3333em"></mspace><mi>p</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(p-1)! \equiv -1 \pmod p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)!</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≡</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">−</span><span class="mord">1</span><span class="mspace allowbreak"></span><span class="mspace" style="margin-right:0.4444em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathrm">mod</span></span></span><span class="mspace" style="margin-right:0.3333em;"></span><span class="mord mathnormal">p</span><span class="mclose">)</span></span></span></span> 判断质数）。</li>
+<li>〖7级〗裴蜀定理（扩展欧几里得定理，表达ax+by=gcd(a,b)的整数解）。</li>
+<li>〖7级〗逆元（乘法逆元的求解，如费马小定理或扩展欧几里得求 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>a</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mspace></mspace><mspace width="0.6667em"></mspace><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow><mtext> </mtext><mtext> </mtext><mi>m</mi></mrow><annotation encoding="application/x-tex">a^{-1} \mod m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace allowbreak"></span><span class="mspace" style="margin-right:0.6667em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord"><span class="mord"><span class="mord mathrm">mod</span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">m</span></span></span></span>）；例题: <a href="https://www.luogu.com.cn/problem/P1082">Luogu P1082 同余方程</a>（扩展欧几里得求逆元，使 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>x</mi><mo>≡</mo><mn>1</mn><mspace></mspace><mspace width="0.4444em"></mspace><mo stretchy="false">(</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow><mspace width="0.3333em"></mspace><mi>b</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">ax\equiv1\pmod b</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4637em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≡</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span><span class="mspace allowbreak"></span><span class="mspace" style="margin-right:0.4444em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathrm">mod</span></span></span><span class="mspace" style="margin-right:0.3333em;"></span><span class="mord mathnormal">b</span><span class="mclose">)</span></span></span></span>）。</li>
+<li>〖7级〗中国剩余定理（CRT，求解一组同余方程组的通解）。</li>
+</ul>
+<h4 id="253-组合数学">2.5.3 组合数学 </h4>
+<ul>
+<li>〖6级〗多重集的排列计数（元素可重复的排列计数）。</li>
+<li>〖6级〗多重集的组合计数（元素可重复的组合计数，“可放回”组合）。</li>
+<li>〖6级〗错排数、圆排列等特殊计数问题（如错排公式，圆桌排列）。</li>
+<li>〖6级〗鸽巢原理（抽屉原理，用于存在性证明）。</li>
+<li>〖6级〗二项式定理（<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>a</mi><mo>+</mo><mi>b</mi><msup><mo stretchy="false">)</mo><mi>n</mi></msup></mrow><annotation encoding="application/x-tex">(a+b)^n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">b</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6644em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span></span></span></span> 展开公式及应用）。</li>
+<li>〖7级〗容斥原理（用于计算并集的容量，处理重复计数）。</li>
+<li>〖7级〗卡特兰数（Catalan 数，一些计数问题的结果，如括号序列计数）；例题: <a href="https://www.luogu.com.cn/problem/P1044">Luogu P1044 栈</a>（出栈序列计数问题，结果为卡特兰数）。</li>
+</ul>
+<h4 id="254-线性代数">2.5.4 线性代数 </h4>
+<ul>
+<li>〖5级〗矩阵的概念（矩阵表示及加减乘运算）。</li>
+<li>〖6级〗特殊矩阵：稀疏矩阵、三角矩阵、对称矩阵等性质。</li>
+<li>〖6级〗矩阵的初等变换（行变换、列变换的作用）。</li>
+<li>〖6级〗矩阵的加减乘和转置运算。</li>
+<li>〖7级〗线性方程组的高斯消元法（用消元法解线性方程组）。</li>
+</ul>
+<h2 id="三-noi-级">三、NOI 级 </h2>
+<h3 id="31-c-程序设计">3.1 C++ 程序设计 </h3>
+<ul>
+<li>〖8级〗STL 模板深入理解：容器（containers）、迭代器（iterators）、空间配置器（allocators）、适配器（adapters）、算法（algorithms）、仿函数（functors）等框架结构。</li>
+<li>〖8级〗面向对象的程序设计思想（OOP，高度抽象和封装，用于设计复杂系统）。</li>
+</ul>
+<h3 id="32-数据结构">3.2 数据结构 </h3>
+<h4 id="321-线性结构">3.2.1 线性结构 </h4>
+<ul>
+<li>〖8级〗分块（块状数组，将数组按块分段以优化操作）。</li>
+<li>〖8级〗块状链表（将链表按块分段，兼顾链表灵活性和顺序访问效率）。</li>
+</ul>
+<h4 id="322-序列">3.2.2 序列 </h4>
+<ul>
+<li>〖8级〗后缀数组（Suffix Array，用于串的排序及匹配）。</li>
+<li>〖9级〗跳跃表（Skip List，一种随机化的平衡数据结构，替代平衡树）。</li>
+<li>〖9级〗无根树的 Prüfer 序列（每棵带标号树对应的序列编码，用于计数）；例题: <a href="https://www.luogu.com.cn/problem/P6086">Luogu P6086 Prüfer 序列</a>（掌握 Prüfer 序列的生成及应用）。</li>
+</ul>
+<h4 id="323-复杂树">3.2.3 复杂树 </h4>
+<ul>
+<li>〖8级〗树链剖分（Heavy-Light Decomposition，将树分解为重链和轻边，用于在树上处理路径查询问题）。</li>
+<li>〖8级〗主席树（Persistent Segment Tree，可持久化保存历史版本的线段树，支持查询历史状态）。</li>
+<li>〖8级〗二维线段树（Segment Tree 2D，在二维平面内进行查询操作的数据结构）。</li>
+<li>〖9级〗后缀树（Suffix Tree，包含字符串所有后缀的紧凑前缀树，处理子串问题效率高）。</li>
+<li>〖9级〗树套树（如线段树节点上再建线段树，用于二维区间问题）。</li>
+<li>〖9级〗K-D 树（多维空间数据结构，用于最近邻搜索等，多用于计算几何中的点查询）。</li>
+<li>〖10级〗最小树形图（有向图的最小生成树，Arbores，常用 Edmonds 算法求解）。</li>
+<li>〖10级〗动态树（Link-Cut Tree，支持动态连边断边和路径查询的高级数据结构）；例题: <a href="https://www.luogu.com.cn/problem/P3690">Luogu P3690 动态树</a>（实现 Link-Cut Tree，支持动态修改树结构并查询路径信息）。</li>
+</ul>
+<h4 id="324-可合并堆">3.2.4 可合并堆 </h4>
+<ul>
+<li>〖8级〗左偏树（Leftist Heap，一种合并堆，支持堆的快速合并）；例题: <a href="https://www.luogu.com.cn/problem/P3377">Luogu P3377 左偏树</a>（实现可并堆操作，对多个优先队列进行合并和弹出）。</li>
+<li>〖10级〗二项堆（Binomial Heap，支持快速合并的大根堆/小根堆，实现更复杂的堆操作）。</li>
+</ul>
+<h4 id="325-可持久化数据结构">3.2.5 可持久化数据结构 </h4>
+<ul>
+<li>〖9级〗可持久化数据结构（Persistent Data Structure，在更新时保留旧版本数据结构，典型例子如可持久化平衡树、可持久化并查集等，用于问题需要回溯历史状态的场景）。</li>
+</ul>
+<h3 id="33-算法">3.3 算法 </h3>
+<h4 id="331-算法策略">3.3.1 算法策略 </h4>
+<ul>
+<li>〖9级〗复杂分治思想（高级分治策略，如分治 FFT，实现<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>的大整数乘法）。</li>
+<li>〖9级〗平衡规划思想（将问题按某种平衡条件分类处理的策略，例如根号分治，将查询分为大小两类优化）。</li>
+<li>〖9级〗构造思想（直接构造解法或构造反例的算法策略，在博弈论和计数学中常见）。</li>
+</ul>
+<h4 id="332-字符串算法">3.3.2 字符串算法 </h4>
+<ul>
+<li>〖8级〗求最长回文子串的 Manacher 算法（线性时间求字符串最长回文子串长度）；例题: <a href="https://www.luogu.com.cn/problem/P3805">Luogu P3805 Manacher 算法</a>（实现 Manacher 算法求给定字符串的最长回文子串长度）。</li>
+<li>〖8级〗多模式匹配算法 —— AC 自动机（Aho-Corasick 自动机，在多模式串匹配中高效找到所有出现）；例题: <a href="https://www.luogu.com.cn/problem/P3808">Luogu P3808 AC 自动机 (简单版)</a>（构建 AC 自动机，在文本中查找多条模式串出现）。</li>
+<li>〖9级〗扩展 KMP 算法（求字符串的每个后缀与模式串的最长公共前缀，用于解决多次匹配长度问题）。</li>
+<li>〖9级〗确定性有限自动机（DFA）算法（将模式串构建为确定性自动机，用于模式匹配）。</li>
+<li>〖10级〗非确定性有限自动机（NFA）算法（更理论层面的自动机模型，一般通过子集构造转为DFA实现）。</li>
+<li>〖10级〗后缀自动机（Suffix Automaton，一种状态机，表示字符串所有子串的信息，支持求不同子串数量、最长重复子串等）；例题: <a href="https://www.luogu.com.cn/problem/P3804">Luogu P3804 后缀自动机</a>（构建后缀自动机，统计不同子串个数或匹配模式串子串出现次数）。</li>
+</ul>
+<h4 id="333-图论算法">3.3.3 图论算法 </h4>
+<ul>
+<li>〖8级〗网络流算法（如 Edmonds-Karp、Dinic 算法，求最大流，用于分配和匹配类问题）；例题: <a href="https://www.luogu.com.cn/problem/P3376">Luogu P3376 网络最大流</a>（使用 Dinic 算法求解给定流网络的最大流）。</li>
+<li>〖10级〗图的支配集、独立集与覆盖集问题（图论中的 NP难题，如求最小支配集等，一般只能处理小规模或使用近似算法）。</li>
+<li>〖8级〗二分图最大匹配 —— 匈牙利算法（Kuhn-Munkres 算法，求二分图的最大匹配）；例题: <a href="https://www.luogu.com.cn/problem/P3386">Luogu P3386 二分图最大匹配</a>（实现匈牙利算法，求二分图匹配数）。</li>
+<li>〖9级〗二分图最佳匹配 —— KM 算法（用于带权二分图的最大权匹配，即任务分配问题）。</li>
+<li>〖10级〗一般图的最大匹配（例如采用 Blossoms 算法，解决一般图的最大匹配问题，属高级算法实现）。</li>
+</ul>
+<h4 id="334-动态规划">3.3.4 动态规划 </h4>
+<ul>
+<li>〖9级〗复杂动态规划模型构建（设计多维或复杂状态的 DP，例如状态包含多个参数，解决高级计数或优化问题）。</li>
+<li>〖9级〗复杂动态规划模型的优化（使用数学或数据结构优化 DP，如斜率优化优化决策单调的 DP，Convex Hull Trick 优化状态转移）。</li>
+</ul>
+<h3 id="34-数学">3.4 数学 </h3>
+<h4 id="341-信息论基础">3.4.1 信息论基础 </h4>
+<ul>
+<li>〖10级〗熵、互信息、条件熵、相对熵等基本概念（度量不确定性和信息量的指标）。</li>
+<li>〖10级〗信息复杂度基本概念（信息理论中关于计算复杂性的度量）。</li>
+<li>〖10级〗描述复杂度基本概念（Kolmogorov 复杂度，描述数据最简描述长度）。</li>
+<li>〖10级〗通信复杂度基本概念（两人协议下计算问题所需通信量的度量）。</li>
+</ul>
+<h4 id="342-初等数论">3.4.2 初等数论 </h4>
+<ul>
+<li>〖8级〗原根和指数（模 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi></mrow><annotation encoding="application/x-tex">p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">p</span></span></span></span> 的本原根概念及离散对数的计算）。</li>
+<li>〖8级〗Baby Step Giant Step 算法（离散对数求解算法，时间复杂度 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msqrt><mi>n</mi></msqrt></mrow><annotation encoding="application/x-tex">\sqrt{n}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.04em;vertical-align:-0.2397em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8003em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord" style="padding-left:0.833em;"><span class="mord mathnormal">n</span></span></span><span style="top:-2.7603em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="min-width:0.853em;height:1.08em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="1.08em" viewBox="0 0 400000 1080" preserveAspectRatio="xMinYMin slice"><path d="M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z"></path></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2397em;"><span></span></span></span></span></span></span></span></span>，用于求解 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>a</mi><mi>x</mi></msup><mo>≡</mo><mi>b</mi><mspace></mspace><mspace width="0.4444em"></mspace><mo stretchy="false">(</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow><mspace width="0.3333em"></mspace><mi>p</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">a^x \equiv b \pmod p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6644em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6644em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">x</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≡</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace allowbreak"></span><span class="mspace" style="margin-right:0.4444em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathrm">mod</span></span></span><span class="mspace" style="margin-right:0.3333em;"></span><span class="mord mathnormal">p</span><span class="mclose">)</span></span></span></span> 等问题）。</li>
+<li>〖9级〗完全数（因子和等于自身的数，研究其性质）。</li>
+<li>〖9级〗狄利克雷卷积（数论函数的卷积运算，与莫比乌斯反演相关）。</li>
+<li>〖10级〗二次剩余（Quadratic Residue，探讨 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>≡</mo><mi>a</mi><mspace></mspace><mspace width="0.4444em"></mspace><mo stretchy="false">(</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow><mspace width="0.3333em"></mspace><mi>p</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">x^2 \equiv a \pmod p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≡</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span><span class="mspace allowbreak"></span><span class="mspace" style="margin-right:0.4444em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathrm">mod</span></span></span><span class="mspace" style="margin-right:0.3333em;"></span><span class="mord mathnormal">p</span><span class="mclose">)</span></span></span></span> 解的存在性）。</li>
+<li>〖10级〗二次同余式（一般二次同余解的求解，如 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mi>b</mi><mi>x</mi><mo>+</mo><mi>c</mi><mo>≡</mo><mn>0</mn><mspace></mspace><mspace width="0.4444em"></mspace><mo stretchy="false">(</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow><mspace width="0.3333em"></mspace><mi>m</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">ax^2+bx+c\equiv0\pmod m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">a</span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">b</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4637em;"></span><span class="mord mathnormal">c</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≡</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span><span class="mspace allowbreak"></span><span class="mspace" style="margin-right:0.4444em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathrm">mod</span></span></span><span class="mspace" style="margin-right:0.3333em;"></span><span class="mord mathnormal">m</span><span class="mclose">)</span></span></span></span>）。</li>
+<li>〖10级〗二次互反律（判定两个奇质数的二次可除性关系定理）。</li>
+</ul>
+<h4 id="343-离散数学">3.4.3 离散数学 </h4>
+<ul>
+<li>〖9级〗代数系统的基本概念（群、环、域等代数结构定义）。</li>
+<li>〖9级〗群的基本概念（群论基础，如置换群、循环群）。</li>
+<li>〖9级〗置换群与循环群的性质和简单应用。</li>
+</ul>
+<h4 id="344-组合数学">3.4.4 组合数学 </h4>
+<ul>
+<li>〖9级〗母函数（生成函数，用于解决递推计数问题）。</li>
+<li>〖9级〗莫比乌斯变换（数论变换，用于容斥原理形式化计算）。</li>
+<li>〖9级〗Burnside 引理与 Pólya 原理（计数含对称操作的问题，不同染色方案数计算）；例题: <a href="https://www.luogu.com.cn/problem/P4980">Luogu P4980 Pólya 定理</a>（利用 Pólya 计数定理计算涂色方案数）。</li>
+<li>〖9级〗斯特林数（第二类斯特林数用于划分集合，第一类斯特林数用于排列分区等）。</li>
+</ul>
+<h4 id="345-高等数学">3.4.5 高等数学 </h4>
+<ul>
+<li>〖9级〗多项式函数的微分（高等微积分在多项式上的应用，如求导数）。</li>
+<li>〖9级〗多项式函数的积分。</li>
+<li>〖10级〗泰勒级数（函数展开为幂级数，高阶近似）。</li>
+<li>〖10级〗快速傅里叶变换（FFT，用于多项式乘法和卷积计算，复杂度 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>）；例题: <a href="https://www.luogu.com.cn/problem/P3803">Luogu P3803 多项式乘法 (FFT)</a>（使用 FFT 实现两个高位多位数的乘法）。</li>
+<li>〖10级〗卷积运算（结合 FFT 计算序列卷积，如求解两个多项式相乘的结果序列）。</li>
+</ul>
+<h4 id="346-线性代数">3.4.6 线性代数 </h4>
+<ul>
+<li>〖9级〗矩阵的逆运算（求逆矩阵，常用高斯消元或伴随矩阵法）。</li>
+<li>〖9级〗行列式及其运算（求矩阵行列式值，了解性质和计算技巧）。</li>
+<li>〖9级〗线性相关性判定与矩阵秩（判断向量组是否线性独立，矩阵的秩计算）。</li>
+</ul>
+<h4 id="347-概率论">3.4.7 概率论 </h4>
+<ul>
+<li>〖8级〗概率相关概念（随机事件、样本空间、概率公理等基本概念）。</li>
+<li>〖9级〗乘法公式、全概率公式、贝叶斯公式的应用（分解复杂事件概率的计算）。</li>
+</ul>
+<h4 id="348-博弈论">3.4.8 博弈论 </h4>
+<ul>
+<li>〖9级〗零和博弈问题 —— Nim 博弈等（Grundy 值理论，Nim 游戏异或和判胜负原则）；例题: <a href="https://www.luogu.com.cn/problem/P2197">Luogu P2197 Nim 游戏</a>（经典 Nim 石子游戏，两人轮流取石子，利用异或和判定胜负）。</li>
+<li>〖9级〗Sprague-Grundy（SG）函数概念及应用（将任意组合博弈化归为 Nim 博弈的方法，计算每个局面的 Grundy 值判断先手胜负）。</li>
+</ul>
+<h4 id="349-运筹学">3.4.9 运筹学 </h4>
+<ul>
+<li>〖10级〗线性规划之单纯形法（求解线性规划优化问题的经典算法，求线性约束下的目标函数极值）。</li>
+</ul>
+<h4 id="3410-计算几何">3.4.10 计算几何 </h4>
+<ul>
+<li>〖7级〗向量及其运算（向量加减、点积叉积，用于判断角度和面积等）。</li>
+<li>〖8级〗点、线、面之间的位置关系判断（点在直线哪侧，点是否在多边形内等）。</li>
+<li>〖8级〗常见图形的面积计算（多边形面积、曲面展开面积等）。</li>
+<li>〖8级〗二维凸包的计算及应用（平面上一组点的凸包，用 Graham 扫描或 Andrew 算法求解）；例题: <a href="https://www.luogu.com.cn/problem/P2742">Luogu P2742 二维凸包</a>（计算一组点的凸包并输出其周长）。</li>
+<li>〖9级〗半平面交（求若干半平面的交集多边形，用于线性约束的可行区域求解）。</li>
+</ul>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>
