@@ -4,27 +4,37 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>我的文件树</title>
+  <title>GitHub 文件树预览</title>
   <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
     ul { list-style-type: none; padding-left: 20px; }
     li { margin: 4px 0; }
     .folder { font-weight: bold; color: #2c3e50; cursor: pointer; }
+    .file a { text-decoration: none; color: #2980b9; cursor: pointer; }
+    .file a:hover { text-decoration: underline; }
+    #preview { margin-top: 40px; padding: 20px; border-top: 1px solid #ccc; }
   </style>
+  <!-- 引入 markdown 渲染库 marked.js -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
   <h1>📁 GitHub 仓库文件树</h1>
   <div id="file-tree">加载中...</div>
+  <div id="preview"></div>
 
   <script>
-    const username = "easonoi"; // 👈 改成你的 GitHub 用户名
-    const repo = "easonoi.github.io";     // 👈 改成你的 GitHub 仓库名
-    const branch = "main";         // 👈 默认分支，通常是 main 或 master
+    const username = "easonoi"; // ← 改为你的用户名
+    const repo = "easonoi.github.io";     // ← 改为你的仓库名
+    const branch = "main";         // ← 改为你的分支名（通常是 main 或 master）
+
+    const fileTree = document.getElementById("file-tree");
+    const preview = document.getElementById("preview");
 
     async function fetchDir(path = "") {
       const url = `https://api.github.com/repos/${username}/${repo}/contents/${path}?ref=${branch}`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`加载失败: ${response.status}`);
-      return await response.json();
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("无法加载目录");
+      return await res.json();
     }
 
     async function buildTree(container, path = "") {
@@ -33,19 +43,41 @@
 
       for (let item of items) {
         const li = document.createElement("li");
-        li.textContent = item.name;
 
         if (item.type === "dir") {
+          li.textContent = "📁 " + item.name;
           li.classList.add("folder");
+
           li.addEventListener("click", async () => {
             if (li.querySelector("ul")) {
               li.removeChild(li.querySelector("ul")); // 折叠
             } else {
-              const childContainer = document.createElement("div");
-              li.appendChild(childContainer);
-              await buildTree(childContainer, item.path); // 递归加载子目录
+              const sub = document.createElement("div");
+              li.appendChild(sub);
+              await buildTree(sub, item.path);
             }
           });
+
+        } else if (item.type === "file") {
+          li.classList.add("file");
+          const ext = item.name.split('.').pop().toLowerCase();
+          const a = document.createElement("a");
+          a.textContent = "📄 " + item.name;
+          a.href = "#";
+          a.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const rawUrl = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${item.path}`;
+            if (ext === "html") {
+              window.open(rawUrl, "_blank");
+            } else if (ext === "md") {
+              preview.innerHTML = "⌛ 正在加载 Markdown...";
+              const content = await fetch(rawUrl).then(r => r.text());
+              preview.innerHTML = `<h2>📝 ${item.name}</h2>` + marked.parse(content);
+            } else {
+              window.open(`https://github.com/${username}/${repo}/blob/${branch}/${item.path}`, "_blank");
+            }
+          });
+          li.appendChild(a);
         }
 
         ul.appendChild(li);
@@ -55,7 +87,8 @@
       container.appendChild(ul);
     }
 
-    buildTree(document.getElementById("file-tree"));
+    buildTree(fileTree);
   </script>
 </body>
 </html>
+
