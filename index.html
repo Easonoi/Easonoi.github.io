@@ -1,2 +1,61 @@
 
 <p>OI Beginner Tutorial By Eason Wu</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>我的文件树</title>
+  <style>
+    ul { list-style-type: none; padding-left: 20px; }
+    li { margin: 4px 0; }
+    .folder { font-weight: bold; color: #2c3e50; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>📁 GitHub 仓库文件树</h1>
+  <div id="file-tree">加载中...</div>
+
+  <script>
+    const username = "你的用户名"; // 👈 改成你的 GitHub 用户名
+    const repo = "你的仓库名";     // 👈 改成你的 GitHub 仓库名
+    const branch = "main";         // 👈 默认分支，通常是 main 或 master
+
+    async function fetchDir(path = "") {
+      const url = `https://api.github.com/repos/${username}/${repo}/contents/${path}?ref=${branch}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`加载失败: ${response.status}`);
+      return await response.json();
+    }
+
+    async function buildTree(container, path = "") {
+      const items = await fetchDir(path);
+      const ul = document.createElement("ul");
+
+      for (let item of items) {
+        const li = document.createElement("li");
+        li.textContent = item.name;
+
+        if (item.type === "dir") {
+          li.classList.add("folder");
+          li.addEventListener("click", async () => {
+            if (li.querySelector("ul")) {
+              li.removeChild(li.querySelector("ul")); // 折叠
+            } else {
+              const childContainer = document.createElement("div");
+              li.appendChild(childContainer);
+              await buildTree(childContainer, item.path); // 递归加载子目录
+            }
+          });
+        }
+
+        ul.appendChild(li);
+      }
+
+      container.innerHTML = '';
+      container.appendChild(ul);
+    }
+
+    buildTree(document.getElementById("file-tree"));
+  </script>
+</body>
+</html>
