@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>SiliconFlow AI 聊天（localStorage版）</title>
+  <title>SiliconFlow AI 聊天（localStorage 版）</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,10 +11,10 @@
     #chat-log {
       border: 1px solid #ccc;
       padding: 10px;
-      height: 300px;
+      height: 400px;
       overflow-y: auto;
-      margin-bottom: 10px;
       white-space: pre-wrap;
+      margin-bottom: 10px;
     }
     .user-msg {
       color: blue;
@@ -28,6 +28,10 @@
       color: gray;
       margin: 5px 0;
     }
+    .system-msg {
+      color: purple;
+      margin: 5px 0;
+    }
     .timestamp {
       font-size: 0.8em;
       color: #666;
@@ -38,105 +42,108 @@
 <body>
   <h1>SiliconFlow AI 聊天</h1>
   <div id="chat-log"></div>
-  <textarea id="user-input" rows="3" cols="50" placeholder="请输入你的消息..."></textarea>
-  <br>
+  <textarea id="user-input" rows="4" cols="50" placeholder="请输入你的消息..."></textarea><br>
   <button id="send-btn">发送</button>
   <button id="clear-btn">清除聊天记录</button>
 
   <script>
-    // SiliconFlow API 接口地址和 API 密钥
-    const apiEndpoint = 'https://api.siliconflow.cn/v1/chat"';
-    const apiKey = 'sk-mskdymxqaveuuwxryoxlkjquzujocjddcxlacuawgppxrnjs';
+    // SiliconFlow API 配置
+    const API_KEY = "sk-tdebsufltysokmhqqneocnbzipqtamdqoyfzvzpancbewfdy";
+    const BASE_URL = "https://api.siliconflow.cn/v1";
+    const CHAT_ENDPOINT = BASE_URL + "/chat/completions";
 
-    // 获取页面元素
-    const chatLog = document.getElementById('chat-log');
-    const userInput = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-btn');
-    const clearBtn = document.getElementById('clear-btn');
+    // 全局对话历史数组（包含系统提示等），每条记录格式：{role, content, timestamp}
+    let conversation = [];
 
-    // 全局聊天记录数组，每条记录包含：sender, message, timestamp
-    let chatHistory = [];
-
-    // 将聊天记录保存到 localStorage
-    function updateLocalStorage() {
-      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-    }
-
-    // 加载 localStorage 中的聊天记录
+    // 从 localStorage 加载聊天记录并在页面显示
     function loadChatHistory() {
-      const storedHistory = localStorage.getItem('chatHistory');
+      const storedHistory = localStorage.getItem("chatHistory");
       if (storedHistory) {
-        chatHistory = JSON.parse(storedHistory);
-        chatHistory.forEach(record => {
-          appendMessage(record.sender, record.message, record.timestamp, false);
+        conversation = JSON.parse(storedHistory);
+        conversation.forEach(msg => {
+          appendMessageToLog(msg.role, msg.content, msg.timestamp, false);
         });
+      } else {
+        // 初始化系统提示消息
+        const systemMsg = { role: "system", content: "You are a helpful assistant.", timestamp: Date.now() };
+        conversation.push(systemMsg);
+        updateLocalStorage();
+        appendMessageToLog(systemMsg.role, systemMsg.content, systemMsg.timestamp, false);
       }
     }
 
-    // 辅助函数：格式化时间戳
-    function formatTimestamp(timestamp) {
-      const date = new Date(timestamp);
+    // 更新 localStorage
+    function updateLocalStorage() {
+      localStorage.setItem("chatHistory", JSON.stringify(conversation));
+    }
+
+    // 格式化时间戳
+    function formatTimestamp(ts) {
+      const date = new Date(ts);
       return date.toLocaleString();
     }
 
-    // 辅助函数：在聊天记录中追加消息，并保存记录
-    // 参数 saveRecord 控制是否更新 chatHistory（false 时用于页面加载时恢复记录，不重复保存）
-    function appendMessage(sender, message, timestamp = Date.now(), saveRecord = true) {
-      const messageElem = document.createElement('p');
-      // 根据发送者设定不同样式
-      let className = '';
-      if (sender === '用户') {
-        className = 'user-msg';
-      } else if (sender === 'AI') {
-        className = 'ai-msg';
-      } else if (sender === 'AI（推理中）') {
-        className = 'ai-reasoning';
-      }
+    // 将消息追加到聊天记录显示区域，同时决定是否保存到 conversation 数组
+    function appendMessageToLog(role, content, timestamp = Date.now(), save = true) {
+      const chatLog = document.getElementById("chat-log");
+      const messageElem = document.createElement("div");
+      let className = "";
+      if (role === "用户") className = "user-msg";
+      else if (role === "AI") className = "ai-msg";
+      else if (role === "AI（推理中）") className = "ai-reasoning";
+      else if (role === "system") className = "system-msg";
       messageElem.className = className;
-      messageElem.innerHTML = `<strong>${sender}:</strong> ${message} <span class="timestamp">[${formatTimestamp(timestamp)}]</span>`;
+      messageElem.innerHTML = `<strong>${role}:</strong> ${content} <span class="timestamp">[${formatTimestamp(timestamp)}]</span>`;
       chatLog.appendChild(messageElem);
       chatLog.scrollTop = chatLog.scrollHeight;
-
-      if (saveRecord) {
-        chatHistory.push({ sender, message, timestamp });
+      if (save) {
+        conversation.push({ role: role, content: content, timestamp: timestamp });
         updateLocalStorage();
       }
     }
 
-    // 主函数：发送消息并处理流式响应
-    async function sendMessage(message) {
-      // 记录用户消息
-      appendMessage("用户", message);
-      userInput.value = ""; // 清空输入框
+    // 清除聊天记录（页面及 localStorage）
+    function clearChat() {
+      if (confirm("确定要清除聊天记录吗？")) {
+        conversation = [];
+        localStorage.removeItem("chatHistory");
+        document.getElementById("chat-log").innerHTML = "";
+      }
+    }
 
-      // 构造请求体，根据 API 要求调整参数
+    // 调用 SiliconFlow API 实现流式输出
+    async function sendMessage(userMsg) {
+      // 显示用户消息（保存到 conversation）
+      appendMessageToLog("用户", userMsg, Date.now(), true);
+
+      // 构造请求 payload（注意：对话历史中包含系统提示和所有历史消息）
       const payload = {
-        message: message,
+        model: "Pro/deepseek-ai/DeepSeek-R1",  // 指定模型
+        messages: conversation,
+        max_tokens: 16384,
         stream: true
       };
 
       try {
-        const response = await fetch(apiEndpoint, {
-          method: 'POST',
+        const response = await fetch(CHAT_ENDPOINT, {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + apiKey
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + API_KEY
           },
           body: JSON.stringify(payload)
         });
-
         if (!response.ok) {
-          appendMessage("AI", "错误: " + response.statusText);
+          appendMessageToLog("AI", "错误: " + response.statusText, Date.now(), true);
           return;
         }
-
-        // 处理流式输出
         const reader = response.body.getReader();
         const decoder = new TextDecoder("utf-8");
-        let aiContent = "";
-        // 创建用于显示推理过程的占位元素
-        const reasoningElem = document.createElement('p');
-        reasoningElem.className = 'ai-reasoning';
+        let aiReply = "";
+        // 创建一个占位元素显示推理过程
+        const chatLog = document.getElementById("chat-log");
+        const reasoningElem = document.createElement("div");
+        reasoningElem.className = "ai-reasoning";
         reasoningElem.innerHTML = `<strong>AI（推理中）:</strong> `;
         chatLog.appendChild(reasoningElem);
         chatLog.scrollTop = chatLog.scrollHeight;
@@ -145,48 +152,56 @@
           const { done, value } = await reader.read();
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
-          aiContent += chunk;
-          reasoningElem.innerHTML = `<strong>AI（推理中）:</strong> ${aiContent}`;
+          // 按行处理数据块（假设每行数据以 "data: " 开头）
+          const lines = chunk.split("\n").filter(line => line.trim() !== "");
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const dataStr = line.slice("data: ".length).trim();
+              if (dataStr === "[DONE]") {
+                break;
+              }
+              try {
+                const dataJson = JSON.parse(dataStr);
+                const delta = dataJson.choices && dataJson.choices[0].delta;
+                if (delta) {
+                  // 如果存在推理内容且还未开始回复，则显示推理过程
+                  if (delta.reasoning_content && !delta.content) {
+                    reasoningElem.innerHTML = `<strong>AI（推理中）:</strong> ${aiReply + delta.reasoning_content}`;
+                  }
+                  // 如果存在回复内容，则认为开始回复阶段
+                  if (delta.content) {
+                    aiReply += delta.content;
+                    reasoningElem.innerHTML = `<strong>AI（推理中）:</strong> ${aiReply}`;
+                  }
+                }
+              } catch (e) {
+                console.error("解析数据块错误:", e);
+              }
+            }
+          }
         }
-        // 推理完成后移除占位元素，保存最终回复
+        // 推理结束，删除占位元素并显示最终回复
         reasoningElem.remove();
-        appendMessage("AI", aiContent);
+        appendMessageToLog("AI", aiReply, Date.now(), true);
       } catch (error) {
-        console.error(error);
-        appendMessage("AI", "错误: " + error.message);
+        console.error("API 调用错误:", error);
+        appendMessageToLog("AI", "错误: " + error.message, Date.now(), true);
       }
     }
 
-    // 清除聊天记录（包括 localStorage 和页面显示）
-    function clearChat() {
-      chatHistory = [];
-      updateLocalStorage();
-      chatLog.innerHTML = "";
-    }
-
-    // 绑定按钮点击事件
-    sendBtn.addEventListener('click', () => {
-      const message = userInput.value.trim();
+    // 绑定发送和清除按钮事件
+    document.getElementById("send-btn").addEventListener("click", () => {
+      const inputElem = document.getElementById("user-input");
+      const message = inputElem.value.trim();
       if (message) {
         sendMessage(message);
+        inputElem.value = "";
       }
     });
 
-    clearBtn.addEventListener('click', () => {
-      if (confirm("确定要清除聊天记录吗？")) {
-        clearChat();
-      }
-    });
+    document.getElementById("clear-btn").addEventListener("click", clearChat);
 
-    // 回车键触发发送（不换行）
-    userInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        sendBtn.click();
-      }
-    });
-
-    // 页面加载时恢复聊天记录
+    // 页面加载时恢复历史记录
     loadChatHistory();
   </script>
 </body>
