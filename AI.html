@@ -1,155 +1,125 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>SiliconFlow AI 聊天（localStorage 版）</title>
+  <title>AI 对话</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
+      background-color: #f7f7f7;
     }
-    #chat-log {
-      border: 1px solid #ccc;
+    h1 {
+      text-align: center;
+    }
+    #conversation {
+      max-width: 800px;
+      margin: 0 auto 20px;
       padding: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
       height: 400px;
       overflow-y: auto;
-      white-space: pre-wrap;
+    }
+    .message {
+      padding: 5px;
       margin-bottom: 10px;
     }
-    .system-msg {
-      color: purple;
-      margin: 5px 0;
+    .user {
+      text-align: right;
+      color: #00529B;
     }
-    .user-msg {
-      color: blue;
-      margin: 5px 0;
+    .assistant {
+      text-align: left;
+      color: #4F8A10;
     }
-    .assistant-msg {
-      color: green;
-      margin: 5px 0;
+    #inputArea {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
     }
-    .assistant-reasoning {
-      color: gray;
-      margin: 5px 0;
+    textarea {
+      flex: 1;
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      resize: vertical;
     }
-    .timestamp {
-      font-size: 0.8em;
-      color: #666;
-      margin-left: 5px;
+    button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #00529B;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #003f7f;
     }
   </style>
 </head>
 <body>
-  <h1>SiliconFlow AI 聊天</h1>
-  <div id="chat-log"></div>
-  <textarea id="user-input" rows="4" cols="50" placeholder="请输入你的消息..."></textarea><br>
-  <button id="send-btn">发送</button>
-  <button id="clear-btn">清除聊天记录</button>
+  <h1>AI 对话</h1>
+  <div id="conversation"></div>
+  <div id="inputArea">
+    <textarea id="userInput" rows="3" placeholder="输入消息..."></textarea>
+    <button id="sendBtn">发送</button>
+  </div>
 
   <script>
-    // ========== SiliconFlow API 配置 ==========
+    // 请注意：不要直接在生产环境中暴露 API 密钥！
     const API_KEY = "sk-tdebsufltysokmhqqneocnbzipqtamdqoyfzvzpancbewfdy";
-    const BASE_URL = "https://api.siliconflow.cn/v1";
-    const CHAT_ENDPOINT = BASE_URL + "/chat/completions";
-    // 使用 deepseek-ai/DeepSeek-R1 模型；如果不确定是否可用，可尝试 "gpt-3.5-turbo" 等
-    const MODEL_NAME = "Pro/deepseek-ai/DeepSeek-R1";
+    const BASE_URL = "https://api.siliconflow.cn/v1/chat/completions";
+    const MODEL = "Pro/deepseek-ai/DeepSeek-R1";
+    const MAX_TOKENS = 1500; // 根据需要调整
 
-    // ========== 对话历史：每条记录必须用英文 role(system/user/assistant) ==========
-    let conversation = [];
+    // 对话记录，初始包含系统提示
+    const conversation = [
+      { role: "system", content: "You are a helpful assistant." }
+    ];
 
-    // 页面加载时，初始化或恢复对话历史
-    function loadChatHistory() {
-      const storedHistory = localStorage.getItem("chatHistory");
-      if (storedHistory) {
-        conversation = JSON.parse(storedHistory);
-        // 显示已存在的记录
-        conversation.forEach(msg => {
-          appendMessageToLog(msg.role, msg.content, msg.timestamp, false);
-        });
-      } else {
-        // 若无历史记录，先加一个 system 提示
-        const systemMsg = {
-          role: "system",
-          content: "You are a helpful assistant.",
-          timestamp: Date.now()
-        };
-        conversation.push(systemMsg);
-        updateLocalStorage();
-        appendMessageToLog(systemMsg.role, systemMsg.content, systemMsg.timestamp, false);
-      }
+    const conversationDiv = document.getElementById("conversation");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    // 更新对话展示
+    function updateConversation() {
+      conversationDiv.innerHTML = "";
+      conversation.forEach(msg => {
+        // 忽略 system 消息，只显示用户与 AI 对话
+        if (msg.role === "system") return;
+        const div = document.createElement("div");
+        div.classList.add("message", msg.role);
+        div.textContent = (msg.role === "user" ? "你: " : "AI: ") + msg.content;
+        conversationDiv.appendChild(div);
+      });
+      conversationDiv.scrollTop = conversationDiv.scrollHeight;
     }
 
-    // 更新 localStorage
-    function updateLocalStorage() {
-      localStorage.setItem("chatHistory", JSON.stringify(conversation));
-    }
-
-    // 格式化时间
-    function formatTimestamp(ts) {
-      const date = new Date(ts);
-      return date.toLocaleString();
-    }
-
-    // 映射 role -> 显示用中文 & CSS class
-    function getDisplayInfoByRole(role) {
-      switch (role) {
-        case "system":    return { label: "系统", className: "system-msg" };
-        case "user":      return { label: "用户", className: "user-msg" };
-        case "assistant": return { label: "AI",   className: "assistant-msg" };
-        // 这里可根据需要扩展更多角色
-        default:          return { label: role,   className: "assistant-msg" };
-      }
-    }
-
-    // 追加消息到页面日志
-    // 其中 role 必须是 system/user/assistant；显示时再映射成中文
-    function appendMessageToLog(role, content, timestamp = Date.now(), save = true) {
-      const chatLog = document.getElementById("chat-log");
-      const { label, className } = getDisplayInfoByRole(role);
-
-      const messageElem = document.createElement("div");
-      messageElem.className = className;
-      messageElem.innerHTML = `
-        <strong>${label}:</strong> ${content}
-        <span class="timestamp">[${formatTimestamp(timestamp)}]</span>
-      `;
-      chatLog.appendChild(messageElem);
-      chatLog.scrollTop = chatLog.scrollHeight;
-
-      if (save) {
-        conversation.push({ role, content, timestamp });
-        updateLocalStorage();
-      }
-    }
-
-    // 清除聊天
-    function clearChat() {
-      if (confirm("确定要清除聊天记录吗？")) {
-        conversation = [];
-        localStorage.removeItem("chatHistory");
-        document.getElementById("chat-log").innerHTML = "";
-      }
-    }
-
-    // 调用 SiliconFlow API（流式）
-    async function sendMessage(userMsg) {
-      // 先把用户消息存入对话（role = user）
-      appendMessageToLog("user", userMsg, Date.now(), true);
-
-      // 构造请求体：messages 数组要用英文 role
+    // 发送消息并调用 AI API
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+      
+      // 添加用户消息
+      conversation.push({ role: "user", content: text });
+      updateConversation();
+      userInput.value = "";
+      
+      // 构造请求 payload
       const payload = {
-        model: MODEL_NAME,
-        messages: conversation.map(item => ({
-          // 这里的 role 必须是 system/user/assistant
-          role: item.role,
-          content: item.content
-        })),
-        max_tokens: 16384,
-        stream: true
+        model: MODEL,
+        messages: conversation,
+        max_tokens: MAX_TOKENS,
+        stream: false  // 此处使用非流式输出
       };
 
       try {
-        const response = await fetch(CHAT_ENDPOINT, {
+        const response = await fetch(BASE_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -157,77 +127,32 @@
           },
           body: JSON.stringify(payload)
         });
-
         if (!response.ok) {
-          appendMessageToLog("assistant", "错误: " + response.statusText, Date.now(), true);
-          return;
+          throw new Error("API 请求失败：" + response.status);
         }
-
-        // 处理流式输出
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let aiReply = "";
-
-        // 在页面显示“AI（推理中）”占位
-        const chatLog = document.getElementById("chat-log");
-        const reasoningElem = document.createElement("div");
-        reasoningElem.className = "assistant-reasoning";
-        reasoningElem.innerHTML = `<strong>AI（推理中）:</strong> `;
-        chatLog.appendChild(reasoningElem);
-        chatLog.scrollTop = chatLog.scrollHeight;
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value, { stream: true });
-          // 逐行处理
-          const lines = chunk.split("\n").filter(line => line.trim() !== "");
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              const dataStr = line.slice("data: ".length).trim();
-              if (dataStr === "[DONE]") {
-                break;
-              }
-              try {
-                const dataJson = JSON.parse(dataStr);
-                // delta 里若有 content，则拼接到 aiReply
-                const delta = dataJson.choices?.[0]?.delta;
-                if (delta?.content) {
-                  aiReply += delta.content;
-                  // 实时更新“推理中”显示
-                  reasoningElem.innerHTML = `<strong>AI（推理中）:</strong> ${aiReply}`;
-                }
-              } catch (err) {
-                console.error("解析数据块错误:", err);
-              }
-            }
-          }
+        const data = await response.json();
+        // 假设回复位于 data.choices[0].message.content
+        const assistantMsg = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+        if (assistantMsg) {
+          conversation.push({ role: "assistant", content: assistantMsg });
+          updateConversation();
+        } else {
+          throw new Error("未获取到 AI 回复。");
         }
-
-        // 移除“推理中”占位，显示最终回复（role = assistant）
-        reasoningElem.remove();
-        appendMessageToLog("assistant", aiReply, Date.now(), true);
       } catch (error) {
-        console.error("API 调用错误:", error);
-        appendMessageToLog("assistant", "错误: " + error.message, Date.now(), true);
+        console.error(error);
+        conversation.push({ role: "assistant", content: "出错了：" + error.message });
+        updateConversation();
       }
     }
 
-    // 绑定按钮
-    document.getElementById("send-btn").addEventListener("click", () => {
-      const inputElem = document.getElementById("user-input");
-      const message = inputElem.value.trim();
-      if (message) {
-        sendMessage(message);
-        inputElem.value = "";
+    sendBtn.addEventListener("click", sendMessage);
+    // 允许按 Ctrl+Enter 发送消息
+    userInput.addEventListener("keydown", function(event) {
+      if (event.ctrlKey && event.key === "Enter") {
+        sendMessage();
       }
     });
-
-    document.getElementById("clear-btn").addEventListener("click", clearChat);
-
-    // 页面加载时恢复历史记录
-    loadChatHistory();
   </script>
 </body>
 </html>
