@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>SiliconFlow AI 聊天</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #chat-log {
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .user-msg {
+      color: blue;
+      margin: 5px 0;
+    }
+    .ai-msg {
+      color: green;
+      margin: 5px 0;
+    }
+    .ai-reasoning {
+      color: gray;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>SiliconFlow AI 聊天</h1>
+  <div id="chat-log"></div>
+  <textarea id="user-input" rows="3" cols="50" placeholder="请输入你的消息..."></textarea>
+  <br>
+  <button id="send-btn">发送</button>
+
+  <script>
+    // 请将下面的 API 地址替换为实际的 siliconflow API 接口地址
+    const apiEndpoint = 'https://api.siliconflow.ai/chat';
+
+    const chatLog = document.getElementById('chat-log');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    // 辅助函数：在聊天记录中追加消息
+    function appendMessage(content, className) {
+      const messageElem = document.createElement('p');
+      messageElem.className = className;
+      messageElem.textContent = content;
+      chatLog.appendChild(messageElem);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    // 主函数：发送消息并处理流式响应
+    async function sendMessage(message) {
+      appendMessage("用户: " + message, 'user-msg');
+      userInput.value = ""; // 清空输入框
+
+      // 构造请求体，根据 API 要求调整参数
+      const payload = {
+        message: message,
+        stream: true // 请求流式输出
+      };
+
+      try {
+        const response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          appendMessage("错误: " + response.statusText, 'ai-msg');
+          return;
+        }
+
+        // 获取响应流的 Reader 对象
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let aiContent = "";  // 用于累计 AI 输出
+
+        // 清空之前的推理消息（可选）
+        let reasoningElem = document.createElement('p');
+        reasoningElem.className = 'ai-reasoning';
+        reasoningElem.textContent = "AI（推理中）: ";
+        chatLog.appendChild(reasoningElem);
+        chatLog.scrollTop = chatLog.scrollHeight;
+
+        // 逐块读取流式响应
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          aiContent += chunk;
+
+          // 更新推理过程显示（这里选择替换上次的内容）
+          reasoningElem.textContent = "AI（推理中）: " + aiContent;
+        }
+
+        // 最终显示 AI 回复（可清除推理中内容后再显示最终结果）
+        reasoningElem.remove();
+        appendMessage("AI: " + aiContent, 'ai-msg');
+      } catch (error) {
+        console.error(error);
+        appendMessage("错误: " + error.message, 'ai-msg');
+      }
+    }
+
+    // 绑定按钮点击事件
+    sendBtn.addEventListener('click', () => {
+      const message = userInput.value.trim();
+      if (message) {
+        sendMessage(message);
+      }
+    });
+
+    // 可选：回车键触发发送
+    userInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
