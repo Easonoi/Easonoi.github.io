@@ -2,44 +2,62 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>AI 对话（含思考显示与 Local Storage）</title>
+  <title>AI 对话（含折叠思考 & 导出日志）</title>
+  <!-- 引入 marked.js 用于 Markdown 渲染 -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
       background-color: #f7f7f7;
     }
-    h1, h2 {
+    h1 {
       text-align: center;
     }
-    #conversation, #thinking {
+    #exportLogBtn {
+      margin: 10px auto;
+      display: block;
+    }
+    #conversation {
       max-width: 800px;
       margin: 0 auto 20px;
       padding: 10px;
       background-color: #fff;
       border: 1px solid #ddd;
       border-radius: 5px;
+      height: 400px;
       overflow-y: auto;
     }
-    #conversation {
-      height: 300px;
-    }
-    #thinking {
-      height: 100px;
-      color: #a00;
-      font-style: italic;
-    }
     .message {
-      padding: 5px;
+      padding: 10px;
       margin-bottom: 10px;
     }
     .user {
       text-align: right;
       color: #00529B;
+      background: #e1f5fe;
+      border-radius: 5px;
     }
     .assistant {
       text-align: left;
       color: #4F8A10;
+      background: #e8f5e9;
+      border-radius: 5px;
+    }
+    .assistant .reply {
+      margin-bottom: 5px;
+    }
+    .assistant .thinking {
+      margin-top: 5px;
+      background: #fbe9e7;
+      padding: 5px;
+      border-radius: 5px;
+      display: none;
+    }
+    .toggle-thinking-btn {
+      margin-top: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
     }
     #inputArea {
       max-width: 800px;
@@ -72,32 +90,41 @@
 </head>
 <body>
   <h1>AI 对话</h1>
+  <button id="exportLogBtn">导出对话日志</button>
   <div id="conversation"></div>
-  <div id="thinking">思考：<span id="thinkingContent"></span></div>
   <div id="inputArea">
     <textarea id="userInput" rows="3" placeholder="输入消息..."></textarea>
     <button id="sendBtn">发送 (Ctrl+Enter)</button>
   </div>
 
   <script>
-    // 【配置】请注意：不要直接在生产环境中暴露 API 密钥！
+    // ================================
+    // 配置（注意：不要在生产环境直接暴露 API 密钥）
+    // ================================
     const API_KEY = "sk-tdebsufltysokmhqqneocnbzipqtamdqoyfzvzpancbewfdy";
     const BASE_URL = "https://api.siliconflow.cn/v1/chat/completions";
     const MODEL = "Pro/deepseek-ai/DeepSeek-R1";
-    const MAX_TOKENS = 1500; // 根据需要调整
+    const MAX_TOKENS = 1500;
 
-    // 获取页面元素
+    // ================================
+    // DOM 元素
+    // ================================
     const conversationDiv = document.getElementById("conversation");
-    const thinkingContentSpan = document.getElementById("thinkingContent");
     const userInput = document.getElementById("userInput");
     const sendBtn = document.getElementById("sendBtn");
+    const exportLogBtn = document.getElementById("exportLogBtn");
 
-    // 对话记录，初始包含系统提示（系统消息不会在页面中显示）
+    // ================================
+    // 对话记录，初始包含系统提示
+    // 对于 assistant 消息，结构为 { role: "assistant", reply: "", thinking: "" }
+    // ================================
     let conversation = [
       { role: "system", content: "You are a helpful assistant." }
     ];
 
-    // 从 localStorage 加载历史对话
+    // ================================
+    // 加载和保存对话记录到 localStorage
+    // ================================
     function loadConversation() {
       const saved = localStorage.getItem("aiConversation");
       if (saved) {
@@ -110,37 +137,93 @@
       updateConversationDisplay();
     }
 
-    // 将对话保存到 localStorage
     function saveConversation() {
       localStorage.setItem("aiConversation", JSON.stringify(conversation));
     }
 
-    // 更新对话展示（只显示用户和 AI 的消息）
+    // ================================
+    // 更新对话展示（渲染 Markdown）
+    // ================================
     function updateConversationDisplay() {
       conversationDiv.innerHTML = "";
-      conversation.forEach(msg => {
-        if (msg.role === "system") return;
-        const div = document.createElement("div");
-        div.classList.add("message", msg.role);
-        div.textContent = (msg.role === "user" ? "你: " : "AI: ") + msg.content;
-        conversationDiv.appendChild(div);
+      conversation.forEach((msg, index) => {
+        if (msg.role === "system") return; // 不显示系统消息
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", msg.role);
+        if (msg.role === "user") {
+          // 用户消息：直接渲染 Markdown
+          messageDiv.innerHTML = `<strong>你:</strong><br>${marked.parse(msg.content)}`;
+        } else if (msg.role === "assistant") {
+          // AI 消息：包含回复和思考部分
+          let replyHTML = `<div class="reply"><strong>AI:</strong><br>${marked.parse(msg.reply || "")}</div>`;
+          let thinkingHTML = "";
+          if (msg.thinking && msg.thinking.trim() !== "") {
+            thinkingHTML = `<button class="toggle-thinking-btn" onclick="toggleThinking(this)">显示思考过程</button>
+                            <div class="thinking">${marked.parse(msg.thinking)}</div>`;
+          }
+          messageDiv.innerHTML = replyHTML + thinkingHTML;
+        }
+        conversationDiv.appendChild(messageDiv);
       });
       conversationDiv.scrollTop = conversationDiv.scrollHeight;
     }
 
-    // 使用流式处理调用 AI 接口，显示 AI 的思考过程和回复内容
+    // 切换思考过程显示/隐藏
+    function toggleThinking(btn) {
+      const thinkingDiv = btn.nextElementSibling;
+      if (thinkingDiv.style.display === "none" || thinkingDiv.style.display === "") {
+        thinkingDiv.style.display = "block";
+        btn.textContent = "隐藏思考过程";
+      } else {
+        thinkingDiv.style.display = "none";
+        btn.textContent = "显示思考过程";
+      }
+    }
+
+    // ================================
+    // 导出对话日志（Markdown 格式）
+    // ================================
+    function exportConversation() {
+      let logText = "";
+      conversation.forEach(msg => {
+        if (msg.role === "system") return;
+        if (msg.role === "user") {
+          logText += `**你:**\n${msg.content}\n\n`;
+        } else if (msg.role === "assistant") {
+          logText += `**AI 回复:**\n${msg.reply || ""}\n\n`;
+          if (msg.thinking && msg.thinking.trim() !== "") {
+            logText += `**AI 思考:**\n${msg.thinking}\n\n`;
+          }
+        }
+      });
+      const blob = new Blob([logText], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "conversation_log.md";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    exportLogBtn.addEventListener("click", exportConversation);
+
+    // ================================
+    // 发送消息并调用 AI 接口（使用流式输出）
+    // ================================
     async function sendMessage() {
       const text = userInput.value.trim();
       if (!text) return;
-
-      // 添加用户消息并更新展示
+      
+      // 添加用户消息
       conversation.push({ role: "user", content: text });
       updateConversationDisplay();
       saveConversation();
       userInput.value = "";
       
-      // 清空思考区
-      thinkingContentSpan.textContent = "";
+      // 添加一个新的 AI 消息（初始化 reply 和 thinking）
+      const assistantMessage = { role: "assistant", reply: "", thinking: "" };
+      conversation.push(assistantMessage);
+      updateConversationDisplay();
       
       // 构造请求 payload，启用流式输出
       const payload = {
@@ -162,18 +245,9 @@
         if (!response.ok) {
           throw new Error("API 请求失败：" + response.status);
         }
-        // 准备读取响应流
         const reader = response.body.getReader();
         const decoder = new TextDecoder("utf-8");
-        let assistantMsg = "";
-        let thinkingMsg = "";
         let done = false;
-
-        // 创建一个新的对话项用于 AI 回答（初始为空，后续追加内容）
-        const assistantMessage = { role: "assistant", content: "" };
-        conversation.push(assistantMessage);
-        updateConversationDisplay();
-
         while (!done) {
           const { value, done: doneReading } = await reader.read();
           done = doneReading;
@@ -187,36 +261,30 @@
                 break;
               }
               try {
-                let dataJson = JSON.parse(dataStr);
+                const dataJson = JSON.parse(dataStr);
                 const delta = dataJson.choices[0].delta;
                 if (delta.reasoning_content) {
-                  thinkingMsg += delta.reasoning_content;
-                  thinkingContentSpan.textContent = thinkingMsg;
+                  assistantMessage.thinking += delta.reasoning_content;
                 }
                 if (delta.content) {
-                  assistantMsg += delta.content;
-                  assistantMessage.content = assistantMsg;
-                  updateConversationDisplay();
+                  assistantMessage.reply += delta.content;
                 }
+                updateConversationDisplay();
               } catch (e) {
                 console.error("解析数据块失败", e);
               }
             }
           }
         }
-        // 完成后保存对话记录
         saveConversation();
       } catch (error) {
         console.error(error);
-        // 记录错误回复
-        const errorMsg = "出错了：" + error.message;
-        conversation.push({ role: "assistant", content: errorMsg });
+        assistantMessage.reply += "\n\n出错了：" + error.message;
         updateConversationDisplay();
         saveConversation();
       }
     }
 
-    // 绑定事件
     sendBtn.addEventListener("click", sendMessage);
     userInput.addEventListener("keydown", function(event) {
       if (event.ctrlKey && event.key === "Enter") {
