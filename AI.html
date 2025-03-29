@@ -2,25 +2,32 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>AI 对话</title>
+  <title>AI 对话（含思考显示与 Local Storage）</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
       background-color: #f7f7f7;
     }
-    h1 {
+    h1, h2 {
       text-align: center;
     }
-    #conversation {
+    #conversation, #thinking {
       max-width: 800px;
       margin: 0 auto 20px;
       padding: 10px;
       background-color: #fff;
       border: 1px solid #ddd;
       border-radius: 5px;
-      height: 400px;
       overflow-y: auto;
+    }
+    #conversation {
+      height: 300px;
+    }
+    #thinking {
+      height: 100px;
+      color: #a00;
+      font-style: italic;
     }
     .message {
       padding: 5px;
@@ -38,9 +45,10 @@
       max-width: 800px;
       margin: 0 auto;
       display: flex;
+      flex-direction: column;
     }
     textarea {
-      flex: 1;
+      width: 100%;
       padding: 10px;
       font-size: 1em;
       border: 1px solid #ddd;
@@ -48,7 +56,7 @@
       resize: vertical;
     }
     button {
-      margin-left: 10px;
+      margin-top: 10px;
       padding: 10px 20px;
       font-size: 1em;
       border: none;
@@ -65,32 +73,52 @@
 <body>
   <h1>AI 对话</h1>
   <div id="conversation"></div>
+  <div id="thinking">思考：<span id="thinkingContent"></span></div>
   <div id="inputArea">
     <textarea id="userInput" rows="3" placeholder="输入消息..."></textarea>
-    <button id="sendBtn">发送</button>
+    <button id="sendBtn">发送 (Ctrl+Enter)</button>
   </div>
 
   <script>
-    // 请注意：不要直接在生产环境中暴露 API 密钥！
+    // 【配置】请注意：不要直接在生产环境中暴露 API 密钥！
     const API_KEY = "sk-tdebsufltysokmhqqneocnbzipqtamdqoyfzvzpancbewfdy";
     const BASE_URL = "https://api.siliconflow.cn/v1/chat/completions";
     const MODEL = "Pro/deepseek-ai/DeepSeek-R1";
     const MAX_TOKENS = 1500; // 根据需要调整
 
-    // 对话记录，初始包含系统提示
-    const conversation = [
-      { role: "system", content: "You are a helpful assistant." }
-    ];
-
+    // 获取页面元素
     const conversationDiv = document.getElementById("conversation");
+    const thinkingContentSpan = document.getElementById("thinkingContent");
     const userInput = document.getElementById("userInput");
     const sendBtn = document.getElementById("sendBtn");
 
-    // 更新对话展示
-    function updateConversation() {
+    // 对话记录，初始包含系统提示（系统消息不会在页面中显示）
+    let conversation = [
+      { role: "system", content: "You are a helpful assistant." }
+    ];
+
+    // 从 localStorage 加载历史对话
+    function loadConversation() {
+      const saved = localStorage.getItem("aiConversation");
+      if (saved) {
+        try {
+          conversation = JSON.parse(saved);
+        } catch (e) {
+          console.error("加载对话记录失败", e);
+        }
+      }
+      updateConversationDisplay();
+    }
+
+    // 将对话保存到 localStorage
+    function saveConversation() {
+      localStorage.setItem("aiConversation", JSON.stringify(conversation));
+    }
+
+    // 更新对话展示（只显示用户和 AI 的消息）
+    function updateConversationDisplay() {
       conversationDiv.innerHTML = "";
       conversation.forEach(msg => {
-        // 忽略 system 消息，只显示用户与 AI 对话
         if (msg.role === "system") return;
         const div = document.createElement("div");
         div.classList.add("message", msg.role);
@@ -100,22 +128,26 @@
       conversationDiv.scrollTop = conversationDiv.scrollHeight;
     }
 
-    // 发送消息并调用 AI API
+    // 使用流式处理调用 AI 接口，显示 AI 的思考过程和回复内容
     async function sendMessage() {
       const text = userInput.value.trim();
       if (!text) return;
-      
-      // 添加用户消息
+
+      // 添加用户消息并更新展示
       conversation.push({ role: "user", content: text });
-      updateConversation();
+      updateConversationDisplay();
+      saveConversation();
       userInput.value = "";
       
-      // 构造请求 payload
+      // 清空思考区
+      thinkingContentSpan.textContent = "";
+      
+      // 构造请求 payload，启用流式输出
       const payload = {
         model: MODEL,
         messages: conversation,
         max_tokens: MAX_TOKENS,
-        stream: false  // 此处使用非流式输出
+        stream: true
       };
 
       try {
@@ -130,29 +162,70 @@
         if (!response.ok) {
           throw new Error("API 请求失败：" + response.status);
         }
-        const data = await response.json();
-        // 假设回复位于 data.choices[0].message.content
-        const assistantMsg = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-        if (assistantMsg) {
-          conversation.push({ role: "assistant", content: assistantMsg });
-          updateConversation();
-        } else {
-          throw new Error("未获取到 AI 回复。");
+        // 准备读取响应流
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let assistantMsg = "";
+        let thinkingMsg = "";
+        let done = false;
+
+        // 创建一个新的对话项用于 AI 回答（初始为空，后续追加内容）
+        const assistantMessage = { role: "assistant", content: "" };
+        conversation.push(assistantMessage);
+        updateConversationDisplay();
+
+        while (!done) {
+          const { value, done: doneReading } = await reader.read();
+          done = doneReading;
+          const chunk = decoder.decode(value || new Uint8Array());
+          const lines = chunk.split("\n");
+          for (const line of lines) {
+            if (line.trim().startsWith("data: ")) {
+              let dataStr = line.trim().substring(6).trim();
+              if (dataStr === "[DONE]") {
+                done = true;
+                break;
+              }
+              try {
+                let dataJson = JSON.parse(dataStr);
+                const delta = dataJson.choices[0].delta;
+                if (delta.reasoning_content) {
+                  thinkingMsg += delta.reasoning_content;
+                  thinkingContentSpan.textContent = thinkingMsg;
+                }
+                if (delta.content) {
+                  assistantMsg += delta.content;
+                  assistantMessage.content = assistantMsg;
+                  updateConversationDisplay();
+                }
+              } catch (e) {
+                console.error("解析数据块失败", e);
+              }
+            }
+          }
         }
+        // 完成后保存对话记录
+        saveConversation();
       } catch (error) {
         console.error(error);
-        conversation.push({ role: "assistant", content: "出错了：" + error.message });
-        updateConversation();
+        // 记录错误回复
+        const errorMsg = "出错了：" + error.message;
+        conversation.push({ role: "assistant", content: errorMsg });
+        updateConversationDisplay();
+        saveConversation();
       }
     }
 
+    // 绑定事件
     sendBtn.addEventListener("click", sendMessage);
-    // 允许按 Ctrl+Enter 发送消息
     userInput.addEventListener("keydown", function(event) {
       if (event.ctrlKey && event.key === "Enter") {
         sendMessage();
       }
     });
+
+    // 页面加载时恢复对话记录
+    loadConversation();
   </script>
 </body>
 </html>
