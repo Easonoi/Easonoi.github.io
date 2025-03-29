@@ -16,20 +16,20 @@
       white-space: pre-wrap;
       margin-bottom: 10px;
     }
+    .system-msg {
+      color: purple;
+      margin: 5px 0;
+    }
     .user-msg {
       color: blue;
       margin: 5px 0;
     }
-    .ai-msg {
+    .assistant-msg {
       color: green;
       margin: 5px 0;
     }
-    .ai-reasoning {
+    .assistant-reasoning {
       color: gray;
-      margin: 5px 0;
-    }
-    .system-msg {
-      color: purple;
       margin: 5px 0;
     }
     .timestamp {
@@ -47,25 +47,32 @@
   <button id="clear-btn">清除聊天记录</button>
 
   <script>
-    // SiliconFlow API 配置
+    // ========== SiliconFlow API 配置 ==========
     const API_KEY = "sk-tdebsufltysokmhqqneocnbzipqtamdqoyfzvzpancbewfdy";
     const BASE_URL = "https://api.siliconflow.cn/v1";
     const CHAT_ENDPOINT = BASE_URL + "/chat/completions";
+    // 使用 deepseek-ai/DeepSeek-R1 模型；如果不确定是否可用，可尝试 "gpt-3.5-turbo" 等
+    const MODEL_NAME = "Pro/deepseek-ai/DeepSeek-R1";
 
-    // 全局对话历史数组（包含系统提示等），每条记录格式：{role, content, timestamp}
+    // ========== 对话历史：每条记录必须用英文 role(system/user/assistant) ==========
     let conversation = [];
 
-    // 从 localStorage 加载聊天记录并在页面显示
+    // 页面加载时，初始化或恢复对话历史
     function loadChatHistory() {
       const storedHistory = localStorage.getItem("chatHistory");
       if (storedHistory) {
         conversation = JSON.parse(storedHistory);
+        // 显示已存在的记录
         conversation.forEach(msg => {
           appendMessageToLog(msg.role, msg.content, msg.timestamp, false);
         });
       } else {
-        // 初始化系统提示消息
-        const systemMsg = { role: "system", content: "You are a helpful assistant.", timestamp: Date.now() };
+        // 若无历史记录，先加一个 system 提示
+        const systemMsg = {
+          role: "system",
+          content: "You are a helpful assistant.",
+          timestamp: Date.now()
+        };
         conversation.push(systemMsg);
         updateLocalStorage();
         appendMessageToLog(systemMsg.role, systemMsg.content, systemMsg.timestamp, false);
@@ -77,32 +84,45 @@
       localStorage.setItem("chatHistory", JSON.stringify(conversation));
     }
 
-    // 格式化时间戳
+    // 格式化时间
     function formatTimestamp(ts) {
       const date = new Date(ts);
       return date.toLocaleString();
     }
 
-    // 将消息追加到聊天记录显示区域，同时决定是否保存到 conversation 数组
+    // 映射 role -> 显示用中文 & CSS class
+    function getDisplayInfoByRole(role) {
+      switch (role) {
+        case "system":    return { label: "系统", className: "system-msg" };
+        case "user":      return { label: "用户", className: "user-msg" };
+        case "assistant": return { label: "AI",   className: "assistant-msg" };
+        // 这里可根据需要扩展更多角色
+        default:          return { label: role,   className: "assistant-msg" };
+      }
+    }
+
+    // 追加消息到页面日志
+    // 其中 role 必须是 system/user/assistant；显示时再映射成中文
     function appendMessageToLog(role, content, timestamp = Date.now(), save = true) {
       const chatLog = document.getElementById("chat-log");
+      const { label, className } = getDisplayInfoByRole(role);
+
       const messageElem = document.createElement("div");
-      let className = "";
-      if (role === "用户") className = "user-msg";
-      else if (role === "AI") className = "ai-msg";
-      else if (role === "AI（推理中）") className = "ai-reasoning";
-      else if (role === "system") className = "system-msg";
       messageElem.className = className;
-      messageElem.innerHTML = `<strong>${role}:</strong> ${content} <span class="timestamp">[${formatTimestamp(timestamp)}]</span>`;
+      messageElem.innerHTML = `
+        <strong>${label}:</strong> ${content}
+        <span class="timestamp">[${formatTimestamp(timestamp)}]</span>
+      `;
       chatLog.appendChild(messageElem);
       chatLog.scrollTop = chatLog.scrollHeight;
+
       if (save) {
-        conversation.push({ role: role, content: content, timestamp: timestamp });
+        conversation.push({ role, content, timestamp });
         updateLocalStorage();
       }
     }
 
-    // 清除聊天记录（页面及 localStorage）
+    // 清除聊天
     function clearChat() {
       if (confirm("确定要清除聊天记录吗？")) {
         conversation = [];
@@ -111,15 +131,19 @@
       }
     }
 
-    // 调用 SiliconFlow API 实现流式输出
+    // 调用 SiliconFlow API（流式）
     async function sendMessage(userMsg) {
-      // 显示用户消息（保存到 conversation）
-      appendMessageToLog("用户", userMsg, Date.now(), true);
+      // 先把用户消息存入对话（role = user）
+      appendMessageToLog("user", userMsg, Date.now(), true);
 
-      // 构造请求 payload（注意：对话历史中包含系统提示和所有历史消息）
+      // 构造请求体：messages 数组要用英文 role
       const payload = {
-        model: "Pro/deepseek-ai/DeepSeek-R1",  // 指定模型
-        messages: conversation,
+        model: MODEL_NAME,
+        messages: conversation.map(item => ({
+          // 这里的 role 必须是 system/user/assistant
+          role: item.role,
+          content: item.content
+        })),
         max_tokens: 16384,
         stream: true
       };
@@ -133,17 +157,21 @@
           },
           body: JSON.stringify(payload)
         });
+
         if (!response.ok) {
-          appendMessageToLog("AI", "错误: " + response.statusText, Date.now(), true);
+          appendMessageToLog("assistant", "错误: " + response.statusText, Date.now(), true);
           return;
         }
+
+        // 处理流式输出
         const reader = response.body.getReader();
         const decoder = new TextDecoder("utf-8");
         let aiReply = "";
-        // 创建一个占位元素显示推理过程
+
+        // 在页面显示“AI（推理中）”占位
         const chatLog = document.getElementById("chat-log");
         const reasoningElem = document.createElement("div");
-        reasoningElem.className = "ai-reasoning";
+        reasoningElem.className = "assistant-reasoning";
         reasoningElem.innerHTML = `<strong>AI（推理中）:</strong> `;
         chatLog.appendChild(reasoningElem);
         chatLog.scrollTop = chatLog.scrollHeight;
@@ -151,8 +179,9 @@
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
+
           const chunk = decoder.decode(value, { stream: true });
-          // 按行处理数据块（假设每行数据以 "data: " 开头）
+          // 逐行处理
           const lines = chunk.split("\n").filter(line => line.trim() !== "");
           for (const line of lines) {
             if (line.startsWith("data: ")) {
@@ -162,34 +191,30 @@
               }
               try {
                 const dataJson = JSON.parse(dataStr);
-                const delta = dataJson.choices && dataJson.choices[0].delta;
-                if (delta) {
-                  // 如果存在推理内容且还未开始回复，则显示推理过程
-                  if (delta.reasoning_content && !delta.content) {
-                    reasoningElem.innerHTML = `<strong>AI（推理中）:</strong> ${aiReply + delta.reasoning_content}`;
-                  }
-                  // 如果存在回复内容，则认为开始回复阶段
-                  if (delta.content) {
-                    aiReply += delta.content;
-                    reasoningElem.innerHTML = `<strong>AI（推理中）:</strong> ${aiReply}`;
-                  }
+                // delta 里若有 content，则拼接到 aiReply
+                const delta = dataJson.choices?.[0]?.delta;
+                if (delta?.content) {
+                  aiReply += delta.content;
+                  // 实时更新“推理中”显示
+                  reasoningElem.innerHTML = `<strong>AI（推理中）:</strong> ${aiReply}`;
                 }
-              } catch (e) {
-                console.error("解析数据块错误:", e);
+              } catch (err) {
+                console.error("解析数据块错误:", err);
               }
             }
           }
         }
-        // 推理结束，删除占位元素并显示最终回复
+
+        // 移除“推理中”占位，显示最终回复（role = assistant）
         reasoningElem.remove();
-        appendMessageToLog("AI", aiReply, Date.now(), true);
+        appendMessageToLog("assistant", aiReply, Date.now(), true);
       } catch (error) {
         console.error("API 调用错误:", error);
-        appendMessageToLog("AI", "错误: " + error.message, Date.now(), true);
+        appendMessageToLog("assistant", "错误: " + error.message, Date.now(), true);
       }
     }
 
-    // 绑定发送和清除按钮事件
+    // 绑定按钮
     document.getElementById("send-btn").addEventListener("click", () => {
       const inputElem = document.getElementById("user-input");
       const message = inputElem.value.trim();
