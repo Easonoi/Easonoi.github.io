@@ -51,7 +51,6 @@
       background: #fbe9e7;
       padding: 5px;
       border-radius: 5px;
-      display: none;
     }
     .toggle-thinking-btn {
       margin-top: 5px;
@@ -112,7 +111,7 @@
 
     // ================================
     // 对话记录，初始包含系统提示
-    // assistant 消息格式为 { role: "assistant", reply: "", thinking: "" }
+    // assistant 消息格式为 { role: "assistant", reply: "", thinking: "", showThinking: false }
     // ================================
     let conversation = [
       { role: "system", content: "You are a helpful assistant." }
@@ -147,10 +146,11 @@
 
     // ================================
     // 更新对话展示（使用 marked.js 渲染 Markdown）
+    // 为每条 assistant 消息，根据 showThinking 属性设置推理区的显示状态
     // ================================
     function updateConversationDisplay() {
       conversationDiv.innerHTML = "";
-      conversation.forEach((msg) => {
+      conversation.forEach((msg, index) => {
         if (msg.role === "system") return; // 不显示系统消息
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("message", msg.role);
@@ -160,8 +160,11 @@
           let replyHTML = `<div class="reply"><strong>AI:</strong><br>${marked.parse(msg.reply || "")}</div>`;
           let thinkingHTML = "";
           if (msg.thinking && msg.thinking.trim() !== "") {
-            thinkingHTML = `<button class="toggle-thinking-btn" onclick="toggleThinking(this)">显示思考过程</button>
-                            <div class="thinking">${marked.parse(msg.thinking)}</div>`;
+            // 根据 msg.showThinking 决定按钮文本和推理区域的显示状态
+            const btnText = msg.showThinking ? "隐藏思考过程" : "显示思考过程";
+            const displayStyle = msg.showThinking ? "block" : "none";
+            thinkingHTML = `<button class="toggle-thinking-btn" onclick="toggleThinking(${index})">${btnText}</button>
+                            <div class="thinking" style="display: ${displayStyle};">${marked.parse(msg.thinking)}</div>`;
           }
           messageDiv.innerHTML = replyHTML + thinkingHTML;
         }
@@ -170,15 +173,11 @@
       conversationDiv.scrollTop = conversationDiv.scrollHeight;
     }
 
-    // 切换思考过程显示/隐藏
-    function toggleThinking(btn) {
-      const thinkingDiv = btn.nextElementSibling;
-      if (thinkingDiv.style.display === "none" || thinkingDiv.style.display === "") {
-        thinkingDiv.style.display = "block";
-        btn.textContent = "隐藏思考过程";
-      } else {
-        thinkingDiv.style.display = "none";
-        btn.textContent = "显示思考过程";
+    // 切换推理区显示/隐藏，使用消息在 conversation 数组中的索引
+    function toggleThinking(messageIndex) {
+      if (conversation[messageIndex] && conversation[messageIndex].role === "assistant") {
+        conversation[messageIndex].showThinking = !conversation[messageIndex].showThinking;
+        updateConversationDisplay();
       }
     }
 
@@ -221,8 +220,8 @@
       saveConversation();
       userInput.value = "";
       
-      // 添加一个新的 AI 消息（初始化 reply 和 thinking）
-      const assistantMessage = { role: "assistant", reply: "", thinking: "" };
+      // 添加一个新的 AI 消息，初始化 reply、thinking 和 showThinking 属性
+      const assistantMessage = { role: "assistant", reply: "", thinking: "", showThinking: false };
       conversation.push(assistantMessage);
       updateConversationDisplay();
       
@@ -249,7 +248,6 @@
         const reader = response.body.getReader();
         const decoder = new TextDecoder("utf-8");
         let done = false;
-        // 持续读取流数据，每接收一小段就更新 reply 与 thinking
         while (!done) {
           const { value, done: doneReading } = await reader.read();
           done = doneReading;
@@ -265,7 +263,7 @@
               try {
                 const dataJson = JSON.parse(dataStr);
                 const delta = dataJson.choices[0].delta;
-                // 分别追加推理和回复内容（这两部分会同时在同一条消息中显示）
+                // 分别追加推理和回复内容
                 if (delta.reasoning_content) {
                   assistantMessage.thinking += delta.reasoning_content;
                 }
