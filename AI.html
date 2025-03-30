@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>流式输出 AI 对话（全部输出推理在前、Markdown 渲染与日志导出）</title>
+  <title>流式输出 AI 对话</title>
   <!-- 引入 marked.js 用于 Markdown 渲染 -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
@@ -86,10 +86,11 @@
   </style>
 </head>
 <body>
-  <h1>deepseek-r1 chat by Eason Wu</h1>
-  <h3>仅用于学习目的，代码开源（GPL3.0开源协议），不要盗用我的 API 密钥 QWQ</h3>
-  <h3>后端处理能力有限，请勿外传，请勿大规模使用！</h3>
-  <h3>（其实全凭使用者的自觉和良知）</h3>
+  <h1>deepseek-r1 chat by Eason Wu ，满血版，超级聪明</h1>
+  <h2>我的目的是造福人民！</h2>
+  <h3>仅用于学习目的，代码开源（GPL3.0协议），不要盗用我的 API 密钥 QWQ</h3>
+  <h3>后端处理能力有限，请勿外传，请勿大规模使用！（其实全凭使用者的自觉和良知）</h3>
+  
   <h4>全部对话不会上传服务器，在浏览器本地存储并直接转发到 deepseek</h4>
   <h4>请放心使用,不信你换个浏览器试试</h4>
   
@@ -123,7 +124,7 @@
     const API_KEY = "sk-tdebsufltysokmhqqneocnbzipqtamdqoyfzvzpancbewfdy";
     const BASE_URL = "https://api.siliconflow.cn/v1/chat/completions";
     const MODEL = "Pro/deepseek-ai/DeepSeek-R1";
-    const MAX_TOKENS = 1500;
+    const MAX_TOKENS = 16384;
 
     // ================================
     // 加载和保存对话记录到 localStorage
