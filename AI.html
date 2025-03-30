@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>流式输出 AI 对话（含折叠思考、Markdown 渲染与日志导出）</title>
+  <title>流式输出 AI 对话（全部输出推理在前、Markdown 渲染与日志导出）</title>
   <!-- 引入 marked.js 用于 Markdown 渲染 -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
@@ -43,19 +43,18 @@
       background: #e8f5e9;
       color: #4F8A10;
     }
-    .assistant .reply {
-      margin-bottom: 5px;
-    }
     .assistant .thinking {
-      margin-top: 5px;
+      margin-bottom: 5px;
       background: #fbe9e7;
       padding: 5px;
       border-radius: 5px;
+      /* 始终显示推理内容 */
+      display: block;
     }
-    .toggle-thinking-btn {
-      margin-top: 5px;
-      cursor: pointer;
-      font-size: 0.9em;
+    .assistant .reply {
+      background: #e8f5e9;
+      padding: 5px;
+      border-radius: 5px;
     }
     #inputArea {
       max-width: 800px;
@@ -88,10 +87,10 @@
 </head>
 <body>
   <h1>deepseek-r1 chat by Eason Wu</h1>
-  <h3>仅用于学习目的，禁止商用，也不要盗用我的API密钥</h3>
+  <h3>仅用于学习目的，禁止商用，也不要盗用我的 API 密钥</h3>
   <h3>后端处理能力有限，请勿外传，请勿大规模使用！</h3>
   <h3>（其实全凭使用者的自觉和良知）</h3>
-  <h4>全部对话不会上传服务器(我也不知道怎么上传)，在浏览器本地存储和直接转发到deepseek，请放心使用(不信你换个浏览器试试)</h4>
+  <h4>全部对话不会上传服务器，在浏览器本地存储并直接转发到 deepseek，请放心使用</h4>
   
   <button id="exportLogBtn">导出对话日志</button>
   <div id="conversation"></div>
@@ -111,14 +110,14 @@
 
     // ================================
     // 对话记录，初始包含系统提示
-    // assistant 消息格式为 { role: "assistant", reply: "", thinking: "", showThinking: false }
+    // assistant 消息格式为 { role: "assistant", reply: "", thinking: "" }
     // ================================
     let conversation = [
       { role: "system", content: "You are a helpful assistant." }
     ];
 
     // ================================
-    // QWQ 不要盗用我的 API KEY！（花钱买的）/(ㄒoㄒ)/~~
+    // 【警告】不要盗用我的 API KEY！（花钱买的）
     // ================================
     const API_KEY = "sk-tdebsufltysokmhqqneocnbzipqtamdqoyfzvzpancbewfdy";
     const BASE_URL = "https://api.siliconflow.cn/v1/chat/completions";
@@ -146,39 +145,28 @@
 
     // ================================
     // 更新对话展示（使用 marked.js 渲染 Markdown）
-    // 为每条 assistant 消息，根据 showThinking 属性设置推理区的显示状态
+    // 对于 assistant 消息，将推理内容放在回复之前
     // ================================
     function updateConversationDisplay() {
       conversationDiv.innerHTML = "";
-      conversation.forEach((msg, index) => {
+      conversation.forEach((msg) => {
         if (msg.role === "system") return; // 不显示系统消息
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("message", msg.role);
         if (msg.role === "user") {
           messageDiv.innerHTML = `<strong>你:</strong><br>${marked.parse(msg.content)}`;
         } else if (msg.role === "assistant") {
-          let replyHTML = `<div class="reply"><strong>AI:</strong><br>${marked.parse(msg.reply || "")}</div>`;
+          // 先输出推理内容，再输出回复内容
           let thinkingHTML = "";
           if (msg.thinking && msg.thinking.trim() !== "") {
-            // 根据 msg.showThinking 决定按钮文本和推理区域的显示状态
-            const btnText = msg.showThinking ? "隐藏思考过程" : "显示思考过程";
-            const displayStyle = msg.showThinking ? "block" : "none";
-            thinkingHTML = `<button class="toggle-thinking-btn" onclick="toggleThinking(${index})">${btnText}</button>
-                            <div class="thinking" style="display: ${displayStyle};">${marked.parse(msg.thinking)}</div>`;
+            thinkingHTML = `<div class="thinking"><strong>推理:</strong><br>${marked.parse(msg.thinking)}</div>`;
           }
-          messageDiv.innerHTML = replyHTML + thinkingHTML;
+          let replyHTML = `<div class="reply"><strong>AI 回复:</strong><br>${marked.parse(msg.reply || "")}</div>`;
+          messageDiv.innerHTML = thinkingHTML + replyHTML;
         }
         conversationDiv.appendChild(messageDiv);
       });
       conversationDiv.scrollTop = conversationDiv.scrollHeight;
-    }
-
-    // 切换推理区显示/隐藏，使用消息在 conversation 数组中的索引
-    function toggleThinking(messageIndex) {
-      if (conversation[messageIndex] && conversation[messageIndex].role === "assistant") {
-        conversation[messageIndex].showThinking = !conversation[messageIndex].showThinking;
-        updateConversationDisplay();
-      }
     }
 
     // ================================
@@ -191,10 +179,8 @@
         if (msg.role === "user") {
           logText += `**你:**\n${msg.content}\n\n`;
         } else if (msg.role === "assistant") {
+          logText += `**AI 推理:**\n${msg.thinking || ""}\n\n`;
           logText += `**AI 回复:**\n${msg.reply || ""}\n\n`;
-          if (msg.thinking && msg.thinking.trim() !== "") {
-            logText += `**AI 思考:**\n${msg.thinking}\n\n`;
-          }
         }
       });
       const blob = new Blob([logText], { type: "text/markdown;charset=utf-8" });
@@ -220,8 +206,8 @@
       saveConversation();
       userInput.value = "";
       
-      // 添加一个新的 AI 消息，初始化 reply、thinking 和 showThinking 属性
-      const assistantMessage = { role: "assistant", reply: "", thinking: "", showThinking: false };
+      // 添加一个新的 AI 消息（初始化 reply 和 thinking）
+      const assistantMessage = { role: "assistant", reply: "", thinking: "" };
       conversation.push(assistantMessage);
       updateConversationDisplay();
       
