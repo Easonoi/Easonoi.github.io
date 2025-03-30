@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>AI 对话（含折叠思考 & 导出日志）</title>
+  <title>流式输出 AI 对话（含折叠思考、Markdown 渲染与日志导出）</title>
   <!-- 引入 marked.js 用于 Markdown 渲染 -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
@@ -31,18 +31,17 @@
     .message {
       padding: 10px;
       margin-bottom: 10px;
+      border-radius: 5px;
     }
     .user {
       text-align: right;
-      color: #00529B;
       background: #e1f5fe;
-      border-radius: 5px;
+      color: #00529B;
     }
     .assistant {
       text-align: left;
-      color: #4F8A10;
       background: #e8f5e9;
-      border-radius: 5px;
+      color: #4F8A10;
     }
     .assistant .reply {
       margin-bottom: 5px;
@@ -103,8 +102,6 @@
   </div>
 
   <script>
-    
-
     // ================================
     // DOM 元素
     // ================================
@@ -115,18 +112,20 @@
 
     // ================================
     // 对话记录，初始包含系统提示
-    // 对于 assistant 消息，结构为 { role: "assistant", reply: "", thinking: "" }
+    // assistant 消息格式为 { role: "assistant", reply: "", thinking: "" }
     // ================================
     let conversation = [
       { role: "system", content: "You are a helpful assistant." }
     ];
+
     // ================================
-    // QWQ 求你别盗用我的API KEY（花钱买的）/(ㄒoㄒ)/~~
+    // QWQ 不要盗用我的 API KEY！（花钱买的）/(ㄒoㄒ)/~~
     // ================================
     const API_KEY = "sk-tdebsufltysokmhqqneocnbzipqtamdqoyfzvzpancbewfdy";
     const BASE_URL = "https://api.siliconflow.cn/v1/chat/completions";
     const MODEL = "Pro/deepseek-ai/DeepSeek-R1";
     const MAX_TOKENS = 1500;
+
     // ================================
     // 加载和保存对话记录到 localStorage
     // ================================
@@ -147,19 +146,17 @@
     }
 
     // ================================
-    // 更新对话展示（渲染 Markdown）
+    // 更新对话展示（使用 marked.js 渲染 Markdown）
     // ================================
     function updateConversationDisplay() {
       conversationDiv.innerHTML = "";
-      conversation.forEach((msg, index) => {
+      conversation.forEach((msg) => {
         if (msg.role === "system") return; // 不显示系统消息
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("message", msg.role);
         if (msg.role === "user") {
-          // 用户消息：直接渲染 Markdown
           messageDiv.innerHTML = `<strong>你:</strong><br>${marked.parse(msg.content)}`;
         } else if (msg.role === "assistant") {
-          // AI 消息：包含回复和思考部分
           let replyHTML = `<div class="reply"><strong>AI:</strong><br>${marked.parse(msg.reply || "")}</div>`;
           let thinkingHTML = "";
           if (msg.thinking && msg.thinking.trim() !== "") {
@@ -209,17 +206,16 @@
       a.click();
       URL.revokeObjectURL(url);
     }
-
     exportLogBtn.addEventListener("click", exportConversation);
 
     // ================================
-    // 发送消息并调用 AI 接口（使用流式输出）
+    // 发送消息并调用 AI 接口（流式输出推理和回复）
     // ================================
     async function sendMessage() {
       const text = userInput.value.trim();
       if (!text) return;
       
-      // 添加用户消息
+      // 添加用户消息并更新展示
       conversation.push({ role: "user", content: text });
       updateConversationDisplay();
       saveConversation();
@@ -253,6 +249,7 @@
         const reader = response.body.getReader();
         const decoder = new TextDecoder("utf-8");
         let done = false;
+        // 持续读取流数据，每接收一小段就更新 reply 与 thinking
         while (!done) {
           const { value, done: doneReading } = await reader.read();
           done = doneReading;
@@ -260,7 +257,7 @@
           const lines = chunk.split("\n");
           for (const line of lines) {
             if (line.trim().startsWith("data: ")) {
-              let dataStr = line.trim().substring(6).trim();
+              const dataStr = line.trim().substring(6).trim();
               if (dataStr === "[DONE]") {
                 done = true;
                 break;
@@ -268,6 +265,7 @@
               try {
                 const dataJson = JSON.parse(dataStr);
                 const delta = dataJson.choices[0].delta;
+                // 分别追加推理和回复内容（这两部分会同时在同一条消息中显示）
                 if (delta.reasoning_content) {
                   assistantMessage.thinking += delta.reasoning_content;
                 }
