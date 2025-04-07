@@ -4,56 +4,118 @@
   <meta charset="UTF-8">
   <title>HI~</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    ul { list-style-type: none; padding-left: 20px; }
-    li { margin: 4px 0; }
-    .folder { font-weight: bold; color: #2c3e50; cursor: pointer; }
-    .file a { text-decoration: none; color: #2980b9; cursor: pointer; }
-    .file a:hover { text-decoration: underline; }
-    #preview { margin-top: 40px; padding: 20px; border-top: 1px solid #ccc; }
-    .center-img { display: block; margin: 20px auto; max-width: 100%; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    /* 全局样式 */
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1, h2, h3 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 20px;
+    }
+    li {
+      margin: 4px 0;
+    }
+    .folder {
+      font-weight: bold;
+      color: #2c3e50;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .folder:hover {
+      background-color: #e2eafc;
+    }
+    .file a {
+      text-decoration: none;
+      color: #2980b9;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .file a:hover {
+      background-color: #e2eafc;
+      text-decoration: underline;
+    }
+    #preview {
+      margin-top: 40px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .center-img {
+      display: block;
+      margin: 20px auto;
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- 使用国内 CDN 加载 marked 库 -->
+  <script src="https://lib.baomitu.com/marked/4.3.0/marked.min.js"></script>
 </head>
 <body>
-  <p><img src="https://api.xecades.xyz/api?date=2025-05-15&str=APIO&quote=%E4%BD%A0%E5%B0%86%E7%9C%8B%E5%88%B0%EF%BC%8C%E2%80%9C%E7%BC%96%E7%A8%8B%E2%80%9C%E6%98%AF%E4%B8%80%E4%B8%AA%E4%BD%95%E7%AD%89%E4%B8%B0%E9%A5%B6%E7%9A%84%E4%B8%96%E7%95%8C&codeforces=eason_wux&luogu=eason_wu&bilibili=%E6%9D%BE%E9%A5%BCtt&img=1" alt=""></p>
+  <div class="container">
+    <p>
+      <img src="https://api.xecades.xyz/api?date=2025-05-15&str=APIO&quote=%E4%BD%A0%E5%B0%86%E7%9C%8B%E5%88%B0%EF%BC%8C%E2%80%9C%E7%BC%96%E7%A8%8B%E2%80%9C%E6%98%AF%E4%B8%80%E4%B8%AA%E4%BD%95%E7%AD%89%E4%B8%B0%E9%A5%B6%E7%9A%84%E4%B8%96%E7%95%8C&codeforces=eason_wux&luogu=eason_wu&bilibili=%E6%9D%BE%E9%A5%BCtt&img=1" alt="">
+    </p>
+    
+    <h1>重铸四中OI荣光！</h1>
+    <h3>课件、程序等全部开源</h3>
   
-  <h1>重铸四中OI荣光！</h1>
-  <h3>课件、程序等全部开源</h3>
- 
-
-  <!-- 插入你要的图片 -->
-  <img src="https://cdn.luogu.com.cn/upload/image_hosting/dez49sfw.png" alt="一个臭打算法竞赛的" class="center-img">
- <h1>📁 GitHub Repository of Eason Wu</h1>
-  <div id="file-tree">加载中...</div>
-  <div id="preview"><p>⬇ 这里会显示 .md 的内容</p></div>
-
+    <!-- 插入图片 -->
+    <img src="https://cdn.luogu.com.cn/upload/image_hosting/dez49sfw.png" alt="一个臭打算法竞赛的" class="center-img">
+    
+    <h1>📁 GitHub Repository of Eason Wu</h1>
+    <div id="file-tree">加载中...</div>
+    <div id="preview"><p>⬇ 这里会显示 .md 的内容</p></div>
+  </div>
+  
   <script>
     const username = "easonoi";
     const repo = "easonoi.github.io";
     const branch = "main";
-
+  
     const fileTree = document.getElementById("file-tree");
     const preview = document.getElementById("preview");
-
+  
     async function fetchDir(path = "") {
       const url = `https://api.github.com/repos/${username}/${repo}/contents/${path}?ref=${branch}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("无法加载目录");
       return await res.json();
     }
-
+  
     async function buildTree(container, path = "") {
       const items = await fetchDir(path);
       const ul = document.createElement("ul");
-
+  
       for (let item of items) {
         const li = document.createElement("li");
-
+  
         if (item.type === "dir") {
           li.textContent = "📁 " + item.name;
           li.classList.add("folder");
-
+  
           li.addEventListener("click", async () => {
             if (li.querySelector("ul")) {
               li.removeChild(li.querySelector("ul"));
@@ -63,7 +125,7 @@
               await buildTree(sub, item.path);
             }
           });
-
+  
         } else if (item.type === "file") {
           li.classList.add("file");
           const ext = item.name.split('.').pop().toLowerCase();
@@ -74,7 +136,7 @@
             e.preventDefault();
             const rawUrl = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${item.path}`;
             const webUrl = `https://${username}.github.io/${item.path}`;
-
+  
             if (ext === "html") {
               window.location.href = webUrl;
             } else if (ext === "md") {
@@ -87,14 +149,14 @@
           });
           li.appendChild(a);
         }
-
+  
         ul.appendChild(li);
       }
-
+  
       container.innerHTML = '';
       container.appendChild(ul);
     }
-
+  
     buildTree(fileTree);
   </script>
 </body>
