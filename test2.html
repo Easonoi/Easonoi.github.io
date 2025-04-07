@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>AI 对话</title>
+  <title>流式输出 AI 对话</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     body {
@@ -12,15 +12,13 @@
       background-color: #f0f2f5;
       color: #2c3e50;
     }
-
     h1 {
       text-align: center;
       margin: 30px 0 10px;
       font-size: 2em;
       color: #1e3a8a;
     }
-
-    select, #exportLogBtn {
+    select, #exportLogBtn, #stopBtn {
       display: block;
       margin: 10px auto;
       padding: 10px 15px;
@@ -31,12 +29,18 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.06);
       transition: all 0.3s;
     }
-
     select:hover, #exportLogBtn:hover {
       background-color: #e8efff;
       border-color: #6691ff;
     }
-
+    #stopBtn {
+      background-color: #e3342f;
+      color: white;
+      cursor: pointer;
+    }
+    #stopBtn:hover {
+      background-color: #cc1f1a;
+    }
     #conversation {
       max-width: 900px;
       margin: 20px auto;
@@ -47,25 +51,21 @@
       height: 450px;
       overflow-y: auto;
     }
-
     .message {
       padding: 15px;
       margin-bottom: 15px;
       border-radius: 10px;
     }
-
     .user {
       background-color: #dbeafe;
       text-align: right;
       color: #1d4ed8;
     }
-
     .assistant {
       background-color: #dcfce7;
       text-align: left;
       color: #15803d;
     }
-
     .assistant .thinking {
       background-color: #fff7ed;
       color: #9a3412;
@@ -74,13 +74,11 @@
       border-radius: 8px;
       border-left: 4px solid #fdba74;
     }
-
     .assistant .reply {
       background-color: #f0fdf4;
       padding: 8px;
       border-radius: 8px;
     }
-
     #inputArea {
       max-width: 900px;
       margin: 0 auto 40px;
@@ -88,7 +86,6 @@
       display: flex;
       flex-direction: column;
     }
-
     textarea {
       width: 100%;
       padding: 15px;
@@ -98,7 +95,6 @@
       resize: vertical;
       margin-bottom: 10px;
     }
-
     button {
       padding: 12px;
       font-size: 1em;
@@ -109,24 +105,25 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
-
     button:hover {
       background-color: #1e3a8a;
     }
   </style>
 </head>
 <body>
-  <h1>AI Chat Playground</h1>
+  <h1>🧠 AI Chat Playground</h1>
 
   <select id="modelSelector">
-    <option value="siliconflow|Pro/deepseek-ai/DeepSeek-R1">DeepSeek-R1 (SiliconFlow)</option>
-    <option value="siliconflow|Qwen/QwQ-32B">Qwen-QwQ-32B (SiliconFlow)</option>
-    <option value="siliconflow|Qwen/Qwen2.5-Coder-32B-Instruct">Qwen2.5-Coder (SiliconFlow)</option>
-    <option value="dreamger|chatgpt-4o-latest">💡 ChatGPT-4 (Dreamger)</option> 
-    <option value="dreamger|gemini-2.5-pro-exp-03-25">💡 gemini-2.5 (Dreamger)</option> 
+    <option value="siliconflow|Pro/deepseek-ai/DeepSeek-R1">🧠 DeepSeek-R1 (SiliconFlow)</option>
+    <option value="siliconflow|Qwen/QwQ-32B">🧠 Qwen-QwQ-32B (SiliconFlow)</option>
+    <option value="siliconflow|Qwen/Qwen2.5-Coder-32B-Instruct">🧠 Qwen2.5-Coder (SiliconFlow)</option>
+    <option value="dreamger|gpt-3.5-turbo">💬 ChatGPT-3.5 (Dreamger)</option>
+    <option value="dreamger|gpt-4">💡 ChatGPT-4 (Dreamger)</option>
+    <option value="dreamger|gpto3minihigh">⚡ GPT-O3-Mini-High (Dreamger)</option>
   </select>
 
   <button id="exportLogBtn">📄 导出对话日志</button>
+  <button id="stopBtn" style="display: none;">⏹️ 终止输出</button>
   <div id="conversation"></div>
 
   <div id="inputArea">
@@ -139,8 +136,10 @@
     const userInput = document.getElementById("userInput");
     const sendBtn = document.getElementById("sendBtn");
     const exportLogBtn = document.getElementById("exportLogBtn");
+    const stopBtn = document.getElementById("stopBtn");
     const modelSelector = document.getElementById("modelSelector");
 
+    // 配置各平台 API 信息
     const CONFIG = {
       siliconflow: {
         apiKey: "sk-tdebsufltysokmhqqneocnbzipqtamdqoyfzvzpancbewfdy",
@@ -148,10 +147,12 @@
       },
       dreamger: {
         apiKey: "sk-D3QwUz3PzbtV9hkME470C22c56684223BbB53eBd33Ee9b4a",
-        baseUrl: "https://api.dreamger.com/v1/chat/completions"
+        // 更新为新的 Dreamger API endpoint（参考文档）
+        baseUrl: "https://api.dreamger.com/api/chat/completions"
       }
     };
 
+    // 根据选择返回当前使用的模型与平台信息
     function getCurrentModelConfig() {
       const [platform, model] = modelSelector.value.split("|");
       return {
@@ -223,6 +224,15 @@
 
     exportLogBtn.addEventListener("click", exportConversation);
 
+    let currentAbortController = null; // 用于控制流式输出的中止
+
+    stopBtn.addEventListener("click", () => {
+      if (currentAbortController) {
+        currentAbortController.abort();
+        stopBtn.style.display = "none";
+      }
+    });
+
     async function sendMessage() {
       const text = userInput.value.trim();
       if (!text) return;
@@ -237,6 +247,7 @@
       updateConversationDisplay();
 
       const { model, apiKey, baseUrl } = getCurrentModelConfig();
+      currentAbortController = new AbortController();
 
       const payload = {
         model,
@@ -245,6 +256,8 @@
         stream: true
       };
 
+      stopBtn.style.display = "block"; // 显示终止按钮
+
       try {
         const response = await fetch(baseUrl, {
           method: "POST",
@@ -252,7 +265,8 @@
             "Content-Type": "application/json",
             "Authorization": "Bearer " + apiKey
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          signal: currentAbortController.signal
         });
 
         if (!response.ok) {
@@ -294,10 +308,17 @@
         }
         saveConversation();
       } catch (error) {
-        console.error(error);
-        assistantMessage.reply += "\n\n出错了：" + error.message;
+        if (error.name === "AbortError") {
+          assistantMessage.reply += "\n\n【已终止输出】";
+        } else {
+          console.error(error);
+          assistantMessage.reply += "\n\n出错了：" + error.message;
+        }
         updateConversationDisplay();
         saveConversation();
+      } finally {
+        stopBtn.style.display = "none";
+        currentAbortController = null;
       }
     }
 
