@@ -2,118 +2,38 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>多平台流式对话示例（SiliconFlow、Dreamger、豆包）</title>
+  <title>多平台流式对话示例（SiliconFlow / Dreamger / 豆包）</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f2f5;
-      color: #2c3e50;
-    }
-    h1 {
-      text-align: center;
-      margin: 30px 0 10px;
-      font-size: 2em;
-      color: #1e3a8a;
-    }
-    select, #exportLogBtn, #stopBtn {
-      display: block;
-      margin: 10px auto;
-      padding: 10px 15px;
-      font-size: 1em;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      background-color: #fff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-      transition: all 0.3s;
-    }
-    select:hover, #exportLogBtn:hover {
-      background-color: #e8efff;
-      border-color: #6691ff;
-    }
-    #stopBtn {
-      background-color: #e3342f;
-      color: white;
-      cursor: pointer;
-    }
-    #stopBtn:hover {
-      background-color: #cc1f1a;
-    }
-    #conversation {
-      max-width: 900px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      height: 450px;
-      overflow-y: auto;
-    }
-    .message {
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-    }
-    .user {
-      background-color: #dbeafe;
-      text-align: right;
-      color: #1d4ed8;
-    }
-    .assistant {
-      background-color: #dcfce7;
-      text-align: left;
-      color: #15803d;
-    }
-    .assistant .reply {
-      background-color: #f0fdf4;
-      padding: 8px;
-      border-radius: 8px;
-    }
-    #inputArea {
-      max-width: 900px;
-      margin: 0 auto 40px;
-      padding: 0 20px;
-      display: flex;
-      flex-direction: column;
-    }
-    textarea {
-      width: 100%;
-      padding: 15px;
-      font-size: 1em;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      resize: vertical;
-      margin-bottom: 10px;
-    }
-    button {
-      padding: 12px;
-      font-size: 1em;
-      border: none;
-      border-radius: 10px;
-      background-color: #1e40af;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background-color: #1e3a8a;
-    }
+    body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f0f2f5; color: #2c3e50; }
+    h1 { text-align: center; margin: 30px 0 10px; font-size: 2em; color: #1e3a8a; }
+    select, #exportLogBtn, #stopBtn { display: block; margin: 10px auto; padding: 10px 15px; font-size: 1em; border-radius: 8px; border: 1px solid #ccc; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.06); transition: all 0.3s; }
+    select:hover, #exportLogBtn:hover { background-color: #e8efff; border-color: #6691ff; }
+    #stopBtn { background-color: #e3342f; color: white; cursor: pointer; }
+    #stopBtn:hover { background-color: #cc1f1a; }
+    #conversation { max-width: 900px; margin: 20px auto; padding: 20px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); height: 450px; overflow-y: auto; }
+    .message { padding: 15px; margin-bottom: 15px; border-radius: 10px; }
+    .user { background-color: #dbeafe; text-align: right; color: #1d4ed8; }
+    .assistant { background-color: #dcfce7; text-align: left; color: #15803d; }
+    .assistant .reply { background-color: #f0fdf4; padding: 8px; border-radius: 8px; }
+    #inputArea { max-width: 900px; margin: 0 auto 40px; padding: 0 20px; display: flex; flex-direction: column; }
+    textarea { width: 100%; padding: 15px; font-size: 1em; border: 1px solid #ccc; border-radius: 10px; resize: vertical; margin-bottom: 10px; }
+    button { padding: 12px; font-size: 1em; border: none; border-radius: 10px; background-color: #1e40af; color: white; cursor: pointer; transition: background-color 0.3s; }
+    button:hover { background-color: #1e3a8a; }
   </style>
 </head>
 <body>
   <h1>多平台流式对话示例</h1>
 
-  <!-- 下拉菜单包括：SiliconFlow、Dreamger 和豆包（Doubao） -->
+  <!-- 下拉菜单：SiliconFlow、Dreamger 以及豆包 -->
   <select id="modelSelector">
-    <!-- SiliconFlow 示例（请根据实际支持的模型名称修改） -->
+    <!-- SiliconFlow（示例：gpt-3.5-turbo） -->
     <option value="siliconflow|gpt-3.5-turbo">💬 ChatGPT-3.5 (SiliconFlow)</option>
     <!-- Dreamger 示例 -->
     <option value="dreamger|gpt-3.5-turbo">💬 ChatGPT-3.5 (Dreamger)</option>
     <option value="dreamger|gpt-4">💡 ChatGPT-4 (Dreamger)</option>
-    <!-- 豆包 API 示例 -->
-    <option value="doubao|doubao-1.5-pro">💬 豆包</option>
+    <!-- 豆包 API 示例（参考 Volcengine 文档调用示例，模型名称可根据实际需要调整） -->
+    <option value="doubao|doubao-1.5-pro">💬 Doubao-1.5-pro (豆包)</option>
   </select>
 
   <button id="exportLogBtn">📄 导出对话日志</button>
@@ -133,12 +53,14 @@
     const stopBtn = document.getElementById("stopBtn");
     const modelSelector = document.getElementById("modelSelector");
 
-    // 多平台 API 配置
-    // 注：各平台均使用 OpenAI 兼容的请求格式，即消息对象仅含 role 与 content 字段
+    /* 多平台 API 配置
+       - siliconflow 与 dreamger 按原有配置，使用 Bearer 认证方式；
+       - doubao 使用豆包 API 接口，需额外设置请求头 x-is-encrypted: true，
+         并使用提供的 API Key (bc5ee712-d9bd-4b39-89eb-096b77aa5694) 进行鉴权。
+    */
     const CONFIG = {
       siliconflow: {
         apiKey: "sk-tdebsufltysokmhqqneocnbzipqtamdqoyfzvzpancbewfdy",
-        // 此处 endpoint 已包含完整路径
         endpoint: "https://api.siliconflow.cn/v1/chat/completions"
       },
       dreamger: {
@@ -147,19 +69,16 @@
       },
       doubao: {
         apiKey: "bc5ee712-d9bd-4b39-89eb-096b77aa5694",
-        // 基于 Volcengine 文档（https://www.volcengine.com/docs/82379/1298454），豆包 API 请求格式与 OpenAI 完全一致
-        endpoint: "https://openapi.doubao.com/v1/chat/completions"
+        endpoint: "https://openapi.doubao.com/v1/chat/completions",
+        extraHeaders: { "x-is-encrypted": "true" }
       }
     };
 
-    // 根据下拉选项返回当前平台与模型配置
+    // 根据下拉选项获取当前平台与模型配置
+    // 选项格式："platform|model"，例如 "doubao|doubao-1.5-pro"
     function getCurrentModelConfig() {
-      // 选项值格式："platform|model"，例如 "doubao|gpt-3.5-turbo"
       const [platform, model] = modelSelector.value.split("|");
-      return {
-        model,
-        ...CONFIG[platform]
-      };
+      return { platform, model, ...CONFIG[platform] };
     }
 
     // 对话记录：所有消息均只包含 role 与 content 字段
@@ -244,10 +163,10 @@
       conversation.push(assistantMessage);
       updateConversationDisplay();
 
-      const { model, apiKey, endpoint } = getCurrentModelConfig();
+      const { platform, model, apiKey, endpoint, extraHeaders } = getCurrentModelConfig();
       currentAbortController = new AbortController();
 
-      // 请求参数格式与 OpenAI 保持一致
+      // 拼接请求数据（统一采用 OpenAI 风格）
       const payload = {
         model,
         messages: conversation,
@@ -257,14 +176,21 @@
 
       stopBtn.style.display = "block"; // 显示终止按钮
 
+      // 构造请求头，默认包含 Content-Type 与 Authorization (Bearer 模式)
+      let headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + apiKey
+      };
+      // 若当前平台提供了额外的 headers（如豆包需传递 x-is-encrypted），则合并到请求头中
+      if (extraHeaders) {
+        headers = { ...headers, ...extraHeaders };
+      }
+
       try {
-        console.log("使用平台:", modelSelector.value, "请求地址:", endpoint);
+        console.log("调用平台:", platform, "模型:", model, "请求地址:", endpoint);
         const response = await fetch(endpoint, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + apiKey
-          },
+          headers: headers,
           body: JSON.stringify(payload),
           signal: currentAbortController.signal
         });
