@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>流式输出 AI 对话</title>
+  <title>Dreamger API 流式对话示例</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     body {
@@ -103,10 +103,10 @@
   </style>
 </head>
 <body>
-  <h1> AI Chat Playground</h1>
+  <h1>Dreamger API 流式对话示例</h1>
 
   <select id="modelSelector">
-    <!-- Dreamger 平台下，请确保选择的模型名称是 Dreamger 支持的 -->
+    <!-- 请确认选择的模型名称为 Dreamger 平台支持的，例如 gpt-3.5-turbo 或 gpt-4 -->
     <option value="dreamger|gpt-3.5-turbo">💬 ChatGPT-3.5 (Dreamger)</option>
     <option value="dreamger|gpt-4">💡 ChatGPT-4 (Dreamger)</option>
   </select>
@@ -128,16 +128,15 @@
     const stopBtn = document.getElementById("stopBtn");
     const modelSelector = document.getElementById("modelSelector");
 
-    // 配置平台 API 信息（注意：请确认 Dreamger API Key 与端点正确）
+    // 配置 Dreamger 平台 API 信息，根据 Apifox 文档指引（替换 Base_URL 为你在平台获取的真实地址）
     const CONFIG = {
       dreamger: {
         apiKey: "sk-D3QwUz3PzbtV9hkME470C22c56684223BbB53eBd33Ee9b4a",
-        // 请确保此 URL 为 Dreamger 正确的 API 端点
-        baseUrl: "https://api.dreamger.com/v1/chat/completions"
+        baseUrl: "https://api.dreamger.com"  // 基础地址，根据文档：https://{{Base_URL}}/v1/chat/completions
       }
     };
 
-    // 根据选择返回当前使用的模型与平台信息
+    // 根据选择获取当前模型与平台配置
     function getCurrentModelConfig() {
       const [platform, model] = modelSelector.value.split("|");
       return {
@@ -146,7 +145,7 @@
       };
     }
 
-    // 初始化 conversation，注意：每条消息只包含 role 和 content 字段
+    // 对话记录：注意每条消息只包含 role 与 content 字段
     let conversation = [
       { role: "system", content: "You are a helpful assistant." }
     ];
@@ -204,7 +203,7 @@
 
     exportLogBtn.addEventListener("click", exportConversation);
 
-    let currentAbortController = null; // 用于控制流式输出的中止
+    let currentAbortController = null; // 用于控制流式请求中止
 
     stopBtn.addEventListener("click", () => {
       if (currentAbortController) {
@@ -217,13 +216,13 @@
       const text = userInput.value.trim();
       if (!text) return;
 
-      // 用户消息
+      // 添加用户消息
       conversation.push({ role: "user", content: text });
       updateConversationDisplay();
       saveConversation();
       userInput.value = "";
 
-      // 初始化 AI 回复消息（只包含 content 字段）
+      // 添加 AI 回复初始消息
       const assistantMessage = { role: "assistant", content: "" };
       conversation.push(assistantMessage);
       updateConversationDisplay();
@@ -231,6 +230,7 @@
       const { model, apiKey, baseUrl } = getCurrentModelConfig();
       currentAbortController = new AbortController();
 
+      // 根据 Apifox 文档指引，调用接口地址为：https://{{Base_URL}}/v1/chat/completions
       const payload = {
         model,
         messages: conversation,
@@ -238,11 +238,12 @@
         stream: true
       };
 
-      stopBtn.style.display = "block"; // 显示终止按钮
+      // 显示终止按钮
+      stopBtn.style.display = "block";
 
       try {
-        console.log("使用模型:", model, "请求地址:", baseUrl);
-        const response = await fetch(baseUrl, {
+        console.log("使用模型:", model, "请求地址:", baseUrl + "/v1/chat/completions");
+        const response = await fetch(baseUrl + "/v1/chat/completions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -275,7 +276,6 @@
               }
               try {
                 const dataJson = JSON.parse(dataStr);
-                // 对返回内容进行累加，此处仅处理 content 字段
                 const delta = dataJson.choices[0].delta;
                 if (delta.content) {
                   assistantMessage.content += delta.content;
