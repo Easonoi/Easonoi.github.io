@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>Dreamger API 流式对话示例</title>
+  <title>多平台流式对话示例（SiliconFlow、Dreamger、豆包）</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     body {
@@ -103,12 +103,17 @@
   </style>
 </head>
 <body>
-  <h1>Dreamger API 流式对话示例</h1>
+  <h1>多平台流式对话示例</h1>
 
+  <!-- 下拉菜单包括：SiliconFlow、Dreamger 和豆包（Doubao） -->
   <select id="modelSelector">
-    <!-- 请确认选择的模型名称为 Dreamger 平台支持的，例如 gpt-3.5-turbo 或 gpt-4 -->
+    <!-- SiliconFlow 示例（请根据实际支持的模型名称修改） -->
+    <option value="siliconflow|gpt-3.5-turbo">💬 ChatGPT-3.5 (SiliconFlow)</option>
+    <!-- Dreamger 示例 -->
     <option value="dreamger|gpt-3.5-turbo">💬 ChatGPT-3.5 (Dreamger)</option>
     <option value="dreamger|gpt-4">💡 ChatGPT-4 (Dreamger)</option>
+    <!-- 豆包 API 示例 -->
+    <option value="doubao|gpt-3.5-turbo">💬 ChatGPT-3.5 (豆包)</option>
   </select>
 
   <button id="exportLogBtn">📄 导出对话日志</button>
@@ -128,16 +133,28 @@
     const stopBtn = document.getElementById("stopBtn");
     const modelSelector = document.getElementById("modelSelector");
 
-    // 配置 Dreamger 平台 API 信息，根据 Apifox 文档指引（替换 Base_URL 为你在平台获取的真实地址）
+    // 多平台 API 配置
+    // 注：各平台均使用 OpenAI 兼容的请求格式，即消息对象仅含 role 与 content 字段
     const CONFIG = {
+      siliconflow: {
+        apiKey: "sk-tdebsufltysokmhqqneocnbzipqtamdqoyfzvzpancbewfdy",
+        // 此处 endpoint 已包含完整路径
+        endpoint: "https://api.siliconflow.cn/v1/chat/completions"
+      },
       dreamger: {
         apiKey: "sk-D3QwUz3PzbtV9hkME470C22c56684223BbB53eBd33Ee9b4a",
-        baseUrl: "https://api.dreamger.com"  // 基础地址，根据文档：https://{{Base_URL}}/v1/chat/completions
+        endpoint: "https://api.dreamger.com/v1/chat/completions"
+      },
+      doubao: {
+        apiKey: "bc5ee712-d9bd-4b39-89eb-096b77aa5694",
+        // 基于 Volcengine 文档（https://www.volcengine.com/docs/82379/1298454），豆包 API 请求格式与 OpenAI 完全一致
+        endpoint: "https://openapi.doubao.com/v1/chat/completions"
       }
     };
 
-    // 根据选择获取当前模型与平台配置
+    // 根据下拉选项返回当前平台与模型配置
     function getCurrentModelConfig() {
+      // 选项值格式："platform|model"，例如 "doubao|gpt-3.5-turbo"
       const [platform, model] = modelSelector.value.split("|");
       return {
         model,
@@ -145,7 +162,7 @@
       };
     }
 
-    // 对话记录：注意每条消息只包含 role 与 content 字段
+    // 对话记录：所有消息均只包含 role 与 content 字段
     let conversation = [
       { role: "system", content: "You are a helpful assistant." }
     ];
@@ -227,10 +244,10 @@
       conversation.push(assistantMessage);
       updateConversationDisplay();
 
-      const { model, apiKey, baseUrl } = getCurrentModelConfig();
+      const { model, apiKey, endpoint } = getCurrentModelConfig();
       currentAbortController = new AbortController();
 
-      // 根据 Apifox 文档指引，调用接口地址为：https://{{Base_URL}}/v1/chat/completions
+      // 请求参数格式与 OpenAI 保持一致
       const payload = {
         model,
         messages: conversation,
@@ -238,12 +255,11 @@
         stream: true
       };
 
-      // 显示终止按钮
-      stopBtn.style.display = "block";
+      stopBtn.style.display = "block"; // 显示终止按钮
 
       try {
-        console.log("使用模型:", model, "请求地址:", baseUrl + "/v1/chat/completions");
-        const response = await fetch(baseUrl + "/v1/chat/completions", {
+        console.log("使用平台:", modelSelector.value, "请求地址:", endpoint);
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
