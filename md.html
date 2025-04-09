@@ -4,25 +4,44 @@
   <meta charset="UTF-8">
   <title>Markdown Viewer</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
-    #content { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    body {
+      font-family: sans-serif;
+      background-color: #f4f4f4;
+      padding: 40px;
+    }
+    #content {
+      max-width: 900px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
   </style>
-  <script src="https://lib.baomitu.com/marked/4.3.0/marked.min.js"></script>
+  <!-- ✅ 正确加载 marked：放在前面！ -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-  <div id="content">Loading markdown...</div>
+  <div id="content">📄 正在加载 Markdown 内容...</div>
+
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const rawUrl = urlParams.get('url');
+    const rawUrl = urlParams.get("url");
 
     if (rawUrl) {
       fetch(rawUrl)
-        .then(res => res.text())
+        .then(res => {
+          if (!res.ok) throw new Error("❌ 无法加载 Markdown 文件");
+          return res.text();
+        })
         .then(md => {
-          document.getElementById('content').innerHTML = marked.parse(md);
+          document.getElementById("content").innerHTML = marked.parse(md);
+        })
+        .catch(err => {
+          document.getElementById("content").innerText = "加载失败：" + err;
         });
     } else {
-      document.getElementById('content').innerText = "未提供 Markdown 文件路径。";
+      document.getElementById("content").innerText = "❗ 请提供 ?url= 参数";
     }
   </script>
 </body>
