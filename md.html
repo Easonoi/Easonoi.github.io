@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Markdown Viewer</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
+    #content { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  </style>
+  <script src="https://lib.baomitu.com/marked/4.3.0/marked.min.js"></script>
+</head>
+<body>
+  <div id="content">Loading markdown...</div>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawUrl = urlParams.get('url');
+
+    if (rawUrl) {
+      fetch(rawUrl)
+        .then(res => res.text())
+        .then(md => {
+          document.getElementById('content').innerHTML = marked.parse(md);
+        });
+    } else {
+      document.getElementById('content').innerText = "未提供 Markdown 文件路径。";
+    }
+  </script>
+</body>
+</html>
