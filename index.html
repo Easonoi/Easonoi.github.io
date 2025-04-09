@@ -139,11 +139,11 @@
   
             if (ext === "html") {
               window.location.href = webUrl;
-              } else if (ext === "md") {
-                const mdViewerUrl = `md.html?url=${encodeURIComponent(rawUrl)}`;
-                window.open(mdViewerUrl, "_blank");
-              }
-            } else {
+            } else if (ext === "md") {
+              const mdViewerUrl = `md.html?url=${encodeURIComponent(rawUrl)}`;
+              window.open(mdViewerUrl, "_blank");
+            }
+            else {
               window.open(`https://github.com/${username}/${repo}/blob/${branch}/${item.path}`, "_blank");
             }
           });
