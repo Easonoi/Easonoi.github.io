@@ -139,10 +139,10 @@
   
             if (ext === "html") {
               window.location.href = webUrl;
-            } else if (ext === "md") {
-              preview.innerHTML = "⌛ 正在加载 Markdown...";
-              const content = await fetch(rawUrl).then(r => r.text());
-              preview.innerHTML = `<h2>📝 ${item.name}</h2>` + marked.parse(content);
+              } else if (ext === "md") {
+                const mdViewerUrl = `md.html?url=${encodeURIComponent(rawUrl)}`;
+                window.open(mdViewerUrl, "_blank");
+              }
             } else {
               window.open(`https://github.com/${username}/${repo}/blob/${branch}/${item.path}`, "_blank");
             }
