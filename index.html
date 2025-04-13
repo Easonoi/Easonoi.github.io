@@ -142,8 +142,10 @@
             } else if (ext === "md") {
               const mdViewerUrl = `md.html?url=${encodeURIComponent(rawUrl)}`;
               window.open(mdViewerUrl, "_blank");
-            }
-            else {
+            } else if (["png", "jpg", "jpeg", "gif", "bmp", "webp"].includes(ext)) {
+              // 如果是图像文件，则在新页面显示图片
+              window.open(rawUrl, "_blank");
+            } else {
               window.open(`https://github.com/${username}/${repo}/blob/${branch}/${item.path}`, "_blank");
             }
           });
